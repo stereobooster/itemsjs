@@ -7,6 +7,7 @@
     "test": "mocha tests/*",
     "lint": "eslint \"**/*.js\" --ext js",
     "lint:fix": "eslint \"**/*.js\" --ext js --fix",
+    "tsc": "tsc --noEmit",
     "prepublishOnly": "npm run build",
     "build": "microbundle",
     "dev": "microbundle watch"
@@ -28,9 +29,13 @@
     "lunr": "^1.0.0"
   },
   "devDependencies": {
+    "@types/fastbitset": "^0.2.1",
+    "@types/lodash-es": "^4.17.10",
+    "@types/lunr": "^2.3.6",
     "eslint": "^8.52.0",
     "microbundle": "^0.15.1",
-    "mocha": "^10.2.0"
+    "mocha": "^10.2.0",
+    "typescript": "^5.2.2"
   },
   "repository": {
     "type": "git",
