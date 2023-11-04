@@ -9,39 +9,37 @@ import {
   matrix,
   parse_boolean_query,
 } from './helpers.js';
-import { Aggregation, Configuration } from './types.js';
+import { Aggregation, Configuration, Item, ItemWithId } from './types.js';
 
 // TODO
 type FacetData<A extends string> = {
-  data: Record<A, any>,
-  bits_data: Record<A, any>,
-  bits_data_temp: Record<A, any>,
-  not_ids?: FastBitSet | null
-  ids?: FastBitSet | null
+  data: Record<A, any>;
+  bits_data: Record<A, any>;
+  bits_data_temp: Record<A, any>;
+  not_ids?: FastBitSet | null;
+  ids?: FastBitSet | null;
 };
 
 /**
  * responsible for making faceted search
  */
 export class Facets<
-  I extends Record<string, any>,
+  I extends Item,
   S extends string,
-  A extends keyof I & string,
-  I_id = I & { _id: number}
+  A extends keyof I & string
 > {
-
-  _items: I_id[];
+  _items: ItemWithId<I>[];
   config: Partial<Record<A, Aggregation>>;
   _ids: number[];
-  _items_map: Record<number, I_id>;
+  _items_map: Record<number, ItemWithId<I>>;
   ids_map: Record<any, number>;
-  _bits_ids: FastBitSet
-  facets: FacetData<A>
+  _bits_ids: FastBitSet;
+  facets: FacetData<A>;
 
   constructor(items: I[], configuration?: Configuration<I, S, A>) {
     configuration = configuration || Object.create(null);
     configuration!.aggregations = configuration!.aggregations || Object.create(null);
-    this._items = items as unknown as I_id[];
+    this._items = items as unknown as ItemWithId<I>[];
     this.config = configuration!.aggregations!;
     // @ts-expect-error TODO
     this.facets = index(items, keys(configuration.aggregations));
@@ -53,7 +51,6 @@ export class Facets<
     map(this._items, (item) => {
       this._ids.push(i);
       this._items_map[i] = item;
-      // @ts-expect-error not sure why TS doesn't like it
       item._id = i;
       ++i;
     });
@@ -99,7 +96,7 @@ export class Facets<
 
   /**
    * ids is optional only when there is query
-   * 
+   *
    * TODO: fix types
    */
   search(input: any, data: any) {
@@ -109,10 +106,7 @@ export class Facets<
     // consider removing clone
     const temp_facet = clone(this.facets);
 
-    temp_facet.not_ids = facets_ids(
-      temp_facet['bits_data'],
-      input.not_filters
-    );
+    temp_facet.not_ids = facets_ids(temp_facet['bits_data'], input.not_filters);
 
     let temp_data;
 

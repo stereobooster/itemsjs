@@ -1,3 +1,14 @@
+// https://stackoverflow.com/a/63549561/1190041
+
+export type Item = Record<string, any> & { _id?: never };
+
+export type ItemWithId<
+  T extends Item = Item,
+  K extends keyof T = Exclude<keyof T, '_id'>
+> = { _id: number } & {
+  [KK in K]: T[K]; // eslint-disable-line no-unused-vars
+};
+
 export interface Bucket<K> {
   key: K;
   doc_count: number;
@@ -6,10 +17,7 @@ export interface Bucket<K> {
 
 export type Buckets<K> = Array<Bucket<K>>;
 
-export interface SearchAggregation<
-  I extends Record<string, any>,
-  A extends keyof I & string
-> {
+export interface SearchAggregation<I extends Item, A extends keyof I & string> {
   name: A;
   title: string;
   position: number;
@@ -29,7 +37,7 @@ export interface Pagination {
 }
 
 export interface SearchOptions<
-  I extends Record<string, any>,
+  I extends Item,
   S extends string,
   A extends keyof I & string
 > {
@@ -70,7 +78,7 @@ export interface AggregationOptions<A extends string> {
   filters?: Partial<Record<A, string[]>>;
 }
 
-export interface SimilarOptions<I extends Record<string, any>> {
+export interface SimilarOptions<I extends Item> {
   field: keyof I & string;
   /** @default 0 */
   minimum?: number;
@@ -83,7 +91,7 @@ export interface SimilarOptions<I extends Record<string, any>> {
 export type Order = 'asc' | 'desc';
 export type Sort = 'doc_count' | 'selected' | 'key' | 'term' | 'count';
 
-export interface Sorting<I extends Record<string, any>> {
+export interface Sorting<I extends Item> {
   field: keyof I | Array<keyof I>;
   order?: Order | Order[];
 }
@@ -107,7 +115,7 @@ export interface Aggregation {
 
 /** Configuration for itemsjs */
 export interface Configuration<
-  I extends Record<string, any>,
+  I extends Item,
   S extends string,
   A extends keyof I & string
 > {
@@ -119,4 +127,8 @@ export interface Configuration<
   native_search_enabled?: boolean;
   // TODO: documentation
   custom_id_field?: string;
+  /** @default false */
+  isExactSearch?: boolean;
+  /** @default false */
+  removeStopWordFilter?: boolean;
 }

@@ -6,6 +6,7 @@ import {
   AggregationOptions,
   Buckets,
   Configuration,
+  Item,
   Pagination,
   SearchAggregation,
   SearchOptions,
@@ -13,7 +14,7 @@ import {
 } from './types.js';
 
 function itemsjs<
-  I extends Record<string, any>,
+  I extends Item,
   S extends string,
   A extends keyof I & string,
   I_id = I & { _id: number}
@@ -23,7 +24,7 @@ function itemsjs<
   // upsert id to items
   // throw error in tests if id does not exists
 
-  let fulltext: Fulltext;
+  let fulltext: Fulltext<I, S, A>;
   if (configuration!.native_search_enabled !== false) {
     fulltext = new Fulltext(items, configuration);
   }
