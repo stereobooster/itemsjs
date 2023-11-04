@@ -3,7 +3,12 @@ env:
   commonjs: true
   mocha: true
   es2021: true
-extends: 'eslint:recommended'
+extends: 
+  - eslint:recommended
+  # - plugin:@typescript-eslint/recommended
+parser: '@typescript-eslint/parser'
+plugins: ['@typescript-eslint']
+root: true
 ignorePatterns: 
   - node_modules
   - examples

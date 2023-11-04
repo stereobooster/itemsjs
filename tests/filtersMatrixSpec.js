@@ -26,7 +26,7 @@ describe('filtering matrix (9 rows in dataset)', function () {
     assert.deepEqual(result.bits_data_temp.b['3'].array(), [2, 3, 5, 7, 8]);
     assert.deepEqual(
       result.bits_data_temp.c['3'].array(),
-      [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      [1, 2, 3, 4, 5, 6, 7, 8, 9]
     );
 
     const ids = filters_ids(result.bits_data_temp);
@@ -63,7 +63,7 @@ describe('filtering matrix (9 rows in dataset)', function () {
     assert.deepEqual(result.bits_data_temp.b['3'].array(), [2, 3, 5, 7, 8]);
     assert.deepEqual(
       result.bits_data_temp.c['3'].array(),
-      [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      [1, 2, 3, 4, 5, 6, 7, 8, 9]
     );
 
     const ids = filters_ids(result.bits_data_temp);
@@ -124,7 +124,7 @@ describe('filtering matrix (9 rows in dataset)', function () {
     } catch (err) {
       assert.equal(
         err.message,
-        'Panic. The key does not exist in facets lists.',
+        'Panic. The key does not exist in facets lists.'
       );
     }
     done();

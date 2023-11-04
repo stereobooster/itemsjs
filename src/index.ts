@@ -2,15 +2,29 @@ import { search, similar, aggregation } from './lib.js';
 import { mergeAggregations } from './helpers.js';
 import { Fulltext } from './fulltext.js';
 import { Facets } from './facets.js';
+import {
+  AggregationOptions,
+  Buckets,
+  Configuration,
+  Pagination,
+  SearchAggregation,
+  SearchOptions,
+  SimilarOptions,
+} from './types.js';
 
-function itemsjs(items, configuration) {
+function itemsjs<
+  I extends Record<string, any>,
+  S extends string,
+  A extends keyof I & string,
+  I_id = I & { _id: number}
+>(items: I[], configuration?: Configuration<I, S, A>) {
   configuration = configuration || Object.create(null);
 
   // upsert id to items
   // throw error in tests if id does not exists
 
-  let fulltext;
-  if (configuration.native_search_enabled !== false) {
+  let fulltext: Fulltext;
+  if (configuration!.native_search_enabled !== false) {
     fulltext = new Fulltext(items, configuration);
   }
 
@@ -25,14 +39,29 @@ function itemsjs(items, configuration) {
      * sort
      * filters
      */
-    search: function (input) {
+    search: function (input?: SearchOptions<I, S, A>): {
+      data: {
+        items: I_id[];
+        allFilteredItems: I_id[] | null;
+        aggregations: Record<A, SearchAggregation<I, A>>;
+      };
+      pagination: Pagination;
+      timings: {
+        facets: number;
+        search: number;
+        sorting: number;
+        total: number;
+      };
+    } {
       input = input || Object.create(null);
 
       /**
        * merge configuration aggregation with user input
        */
-      input.aggregations = mergeAggregations(configuration.aggregations, input);
+      // @ts-expect-error
+      input.aggregations = mergeAggregations(configuration!.aggregations, input);
 
+      // @ts-expect-error
       return search(items, input, configuration, fulltext, facets);
     },
 
@@ -40,7 +69,13 @@ function itemsjs(items, configuration) {
      * returns list of similar elements to specified item id
      * id
      */
-    similar: function (id, options) {
+    similar: function (
+      id: I extends { id: infer ID } ? ID : unknown,
+      options: SimilarOptions<I>
+    ): {
+      data: { items: Array<I_id & { intersection_length: number }> };
+      pagination: Pagination;
+    } {
       return similar(items, id, options);
     },
 
@@ -51,7 +86,10 @@ function itemsjs(items, configuration) {
      * per_page
      * page
      */
-    aggregation: function (input) {
+    aggregation: function (input: AggregationOptions<A>): {
+      data: { buckets: Buckets<I[A]> };
+      pagination: Pagination;
+    } {
       return aggregation(items, input, configuration, fulltext, facets);
     },
 
@@ -59,7 +97,7 @@ function itemsjs(items, configuration) {
      * reindex items
      * reinitialize fulltext search
      */
-    reindex: function (newItems) {
+    reindex: function (newItems: I[]) {
       items = newItems;
       fulltext = new Fulltext(items, configuration);
       facets = new Facets(items, configuration);

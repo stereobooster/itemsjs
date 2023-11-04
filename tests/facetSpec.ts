@@ -1,8 +1,9 @@
 import assert from 'node:assert';
-import itemsJS from '../src/index.js';
+import itemsJS from '../src/index.ts';
 
 import { readFileSync } from 'node:fs';
-const items = JSON.parse(readFileSync('./tests/fixtures/movies.json'));
+import { Movie } from './fixtures/types.ts';
+const items = JSON.parse(readFileSync('./tests/fixtures/movies.json').toString()) as Movie[];
 
 const configuration = {
   aggregations: {
@@ -27,11 +28,12 @@ describe('aggregation / facet', function () {
   it('makes error if name does not exist', function test(done) {
     try {
       itemsjs.aggregation({
+        // @ts-expect-error
         name: 'category2',
       });
     } catch (err) {
       assert.equal(
-        err.message,
+        (err as Error).message,
         'Please define aggregation "category2" in config',
       );
     }

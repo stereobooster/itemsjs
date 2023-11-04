@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import itemsJS from '../src/index.js';
+import itemsJS from '../src/index.ts';
 
 describe('itemjs general tests', function () {
   const items = [
@@ -70,7 +70,7 @@ describe('itemjs general tests', function () {
       is_all_filtered_items: true,
     });
     assert.equal(result.data.items.length, 1);
-    assert.equal(result.data.allFilteredItems.length, 3);
+    assert.equal(result.data.allFilteredItems?.length, 3);
 
     result = itemsjs.search({
       per_page: 1,
@@ -175,7 +175,7 @@ describe('itemjs general tests', function () {
     const itemsjs = itemsJS(items, {
       aggregations: {
         tags: {
-          type: 'terms',
+          // type: 'terms',
           size: 10,
           title: 'Tags',
         },
@@ -208,7 +208,7 @@ describe('itemjs general tests', function () {
     const itemsjs = itemsJS(items, {
       aggregations: {
         tags: {
-          type: 'terms',
+          // type: 'terms',
           size: 10,
           title: 'Tags',
         },
@@ -259,10 +259,10 @@ describe('itemjs general tests', function () {
       query: 'Apple',
     });
 
-    assert.equal(result.data.aggregations.price.facet_stats.min, 1);
-    assert.equal(result.data.aggregations.price.facet_stats.max, 7);
-    assert.equal(result.data.aggregations.price.facet_stats.avg, 3);
-    assert.equal(result.data.aggregations.price.facet_stats.sum, 9);
+    assert.equal(result.data.aggregations.price.facet_stats?.min, 1);
+    assert.equal(result.data.aggregations.price.facet_stats?.max, 7);
+    assert.equal(result.data.aggregations.price.facet_stats?.avg, 3);
+    assert.equal(result.data.aggregations.price.facet_stats?.sum, 9);
 
     done();
   });
@@ -299,7 +299,7 @@ describe('itemjs general tests', function () {
       });
     } catch (err) {
       assert.equal(
-        err.message,
+        (err as Error).message,
         'You cant use chars to calculate the facet_stats.',
       );
     }
@@ -322,8 +322,9 @@ describe('itemjs general tests', function () {
 
     const itemsjs = itemsJS(items, {
       aggregations: {
+        // @ts-expect-error
         tags: {
-          type: 'terms',
+          // type: 'terms',
           size: 10,
           title: 'Tags',
         },

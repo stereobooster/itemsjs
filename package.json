@@ -4,15 +4,15 @@
   "description": "Created to perform fast search on small json dataset (up to 1000 elements).",
   "type": "module",
   "scripts": {
-    "test": "mocha tests/*",
-    "lint": "eslint \"**/*.js\" --ext js",
-    "lint:fix": "eslint \"**/*.js\" --ext js --fix",
+    "test": "ts-mocha -p tsconfig.mocha.json tests/*",
+    "lint": "eslint \"**/*.{js,ts}\"",
+    "lint:fix": "eslint \"**/*.{js,ts}\" --fix",
     "tsc": "tsc --noEmit",
     "prepublishOnly": "npm run build",
     "build": "microbundle",
     "dev": "microbundle watch"
   },
-  "source": "src/index.js",
+  "source": "src/index.ts",
   "exports": {
     "require": "./dist/itemsjs.cjs",
     "default": "./dist/itemsjs.modern.js"
@@ -20,6 +20,7 @@
   "main": "./dist/itemsjs.cjs",
   "module": "./dist/itemsjs.module.js",
   "unpkg": "./dist/itemsjs.umd.js",
+  "types": "./dist/itemsjs.d.ts",
   "author": "Mateusz Rzepa",
   "license": "Apache-2.0",
   "dependencies": {
@@ -32,9 +33,13 @@
     "@types/fastbitset": "^0.2.1",
     "@types/lodash-es": "^4.17.10",
     "@types/lunr": "^2.3.6",
+    "@types/mocha": "^10.0.3",
+    "@typescript-eslint/eslint-plugin": "^6.9.1",
+    "@typescript-eslint/parser": "^6.9.1",
     "eslint": "^8.52.0",
     "microbundle": "^0.15.1",
-    "mocha": "^10.2.0",
+    "ts-mocha": "^10.0.0",
+    "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   },
   "repository": {

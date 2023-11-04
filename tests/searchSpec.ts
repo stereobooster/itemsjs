@@ -1,11 +1,15 @@
 import assert from 'node:assert';
-import itemsJS from '../src/index.js';
+import itemsJS from '../src/index.ts';
 import { clone } from 'lodash-es';
 import { readFileSync } from 'node:fs';
-const items = JSON.parse(readFileSync('./tests/fixtures/items.json'));
-const movies = JSON.parse(readFileSync('./tests/fixtures/movies.json'));
-
-let itemsjs = itemsJS();
+import { Item, Movie, Movie_id, MovieId, MovieUuid } from './fixtures/types.ts';
+import { SearchOptions } from '../src/types.ts';
+const items = JSON.parse(
+  readFileSync('./tests/fixtures/items.json').toString()
+) as Item[];
+const movies = JSON.parse(
+  readFileSync('./tests/fixtures/movies.json').toString()
+) as Movie[];
 
 describe('search', function () {
   const configuration = {
@@ -13,32 +17,34 @@ describe('search', function () {
     aggregations: {
       tags: {
         title: 'Tags',
-        conjunction: true,
+        conjunction: true as boolean,
       },
       actors: {
         title: 'Actors',
-        conjunction: true,
+        conjunction: true as boolean,
       },
       year: {
         title: 'Year',
-        conjunction: true,
+        conjunction: true as boolean,
       },
       in_cinema: {
         title: 'Is played in Cinema',
-        conjunction: true,
+        conjunction: true as boolean,
       },
       category: {
         title: 'Category',
-        conjunction: true,
+        conjunction: true as boolean,
       },
     },
-  };
+  } as SearchOptions<Item, string, keyof Item>;
 
   it('index is empty so cannot search', function test(done) {
     try {
+      // @ts-expect-error
+      const itemsjs = itemsJS();
       itemsjs.search();
     } catch (err) {
-      assert.equal(err.message, 'index first then search');
+      assert.equal((err as Error).message, 'index first then search');
     }
 
     done();
@@ -198,7 +204,7 @@ describe('search', function () {
 
   it('makes search with non existing filter value with conjunction false should return results', function test(done) {
     const localConfiguration = clone(configuration);
-    localConfiguration.aggregations.category.conjunction = false;
+    localConfiguration.aggregations!.category!.conjunction = false;
 
     const itemsjs = itemsJS(items, localConfiguration);
 
@@ -216,7 +222,7 @@ describe('search', function () {
 
   it('makes search with non existing single filter value with conjunction false should return no results', function test(done) {
     const localConfiguration = clone(configuration);
-    localConfiguration.aggregations.category.conjunction = false;
+    localConfiguration.aggregations!.category!.conjunction = false;
 
     const itemsjs = itemsJS(items, configuration);
 
@@ -243,8 +249,8 @@ describe('search', function () {
       });
     } catch (err) {
       assert.equal(
-        err.message,
-        '"query" and "filter" options are not working once native search is disabled',
+        (err as Error).message,
+        '"query" and "filter" options are not working once native search is disabled'
       );
     }
 
@@ -256,6 +262,8 @@ describe('no configuration', function () {
   const configuration = {
     aggregations: {},
   };
+
+  let itemsjs = itemsJS(items, configuration);
 
   before(function (done) {
     itemsjs = itemsJS(items, configuration);
@@ -294,7 +302,9 @@ describe('custom fulltext integration', function () {
       tags: {},
       year: {},
     },
-  };
+  } as SearchOptions<Movie, string, keyof Movie>;
+
+  let itemsjs = itemsJS(movies, configuration);
 
   before(function (done) {
     itemsjs = itemsJS(movies, configuration);
@@ -304,8 +314,9 @@ describe('custom fulltext integration', function () {
   it('makes faceted search after separated quasi fulltext with _ids', function test(done) {
     let i = 1;
     const temp_movies = movies.map((v) => {
+      // @ts-expect-error
       v._id = i++;
-      return v;
+      return v as Movie_id;
     });
 
     const result = itemsjs.search({
@@ -319,12 +330,13 @@ describe('custom fulltext integration', function () {
   it('makes faceted search after separated quasi fulltext with ids', function test(done) {
     let i = 10;
     const temp_movies = movies.map((v) => {
+      // @ts-expect-error
       v.id = i;
       i += 10;
-      return v;
+      return v as MovieId;
     });
 
-    itemsjs = itemsJS(temp_movies, configuration);
+    const itemsjs = itemsJS(temp_movies, configuration);
 
     let result = itemsjs.search({
       ids: temp_movies.map((v) => v.id).slice(0, 1),
@@ -347,15 +359,17 @@ describe('custom fulltext integration', function () {
   it('makes faceted search after separated quasi fulltext with custom id field', function test(done) {
     let i = 10;
     const temp_movies = movies.map((v) => {
+      // @ts-expect-error
       v.uuid = i;
       i += 10;
+      // @ts-expect-error
       delete v.id;
-      return v;
+      return v as MovieUuid;
     });
 
     configuration.custom_id_field = 'uuid';
 
-    itemsjs = itemsJS(temp_movies, configuration);
+    const itemsjs = itemsJS(temp_movies, configuration);
 
     let result = itemsjs.search({
       ids: temp_movies.map((v) => v.uuid).slice(0, 1),

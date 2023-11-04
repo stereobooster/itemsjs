@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import itemsJS from '../src/index.js';
+import itemsJS from '../src/index.ts';
 
 const items = [
   {

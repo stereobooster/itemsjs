@@ -12,6 +12,7 @@ import {
   meanBy,
 } from 'lodash-es';
 import FastBitSet from 'fastbitset';
+// @ts-ignore
 import booleanParser from 'boolean-parser';
 
 export const clone = function (val) {

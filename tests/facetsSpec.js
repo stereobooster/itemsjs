@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import itemsJS from '../src/index.js';
+import itemsJS from '../src/index.ts';
 
 import { Facets } from '../src/facets.js';
 import { facets_ids, getBuckets } from '../src/helpers.js';
