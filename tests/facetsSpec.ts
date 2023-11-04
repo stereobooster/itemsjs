@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import itemsJS from '../src/index.ts';
 
-import { Facets } from '../src/facets.js';
+import { Facets } from '../src/facets.ts';
 import { facets_ids, getBuckets } from '../src/helpers.js';
 import FastBitSet from 'fastbitset';
 
@@ -86,7 +86,7 @@ describe('conjunctive search', function () {
       },
     };
 
-    let result = facets.search(input, {
+    const result = facets.search(input, {
       test: true,
     });
 
@@ -97,7 +97,7 @@ describe('conjunctive search', function () {
     assert.deepEqual(result.data.category.comedy, [3]);
 
     const ids = facets_ids(result['bits_data_temp'], input.filters);
-    assert.deepEqual(ids.array(), [1, 3, 4]);
+    assert.deepEqual(ids!.array(), [1, 3, 4]);
 
     const buckets = getBuckets(result, input, aggregations);
     //console.log(buckets.tags.buckets);
@@ -107,13 +107,16 @@ describe('conjunctive search', function () {
     assert.deepEqual(buckets.actors.title, 'Stars');
     assert.deepEqual(buckets.category.title, 'Category');
 
-    result = itemsjs.search(input);
+    const searchResult = itemsjs.search(input);
 
-    assert.deepEqual(result.pagination.total, 3);
+    assert.deepEqual(searchResult.pagination.total, 3);
     // omit _id in search result
     //assert.deepEqual(result.data.items[0]._id, undefined);
-    assert.deepEqual(result.data.aggregations.tags.buckets[0].doc_count, 3);
-    assert.deepEqual(result.data.aggregations.tags.buckets[0].key, 'c');
+    assert.deepEqual(
+      searchResult.data.aggregations.tags.buckets[0].doc_count,
+      3
+    );
+    assert.deepEqual(searchResult.data.aggregations.tags.buckets[0].key, 'c');
 
     done();
   });
@@ -153,12 +156,15 @@ describe('conjunctive search', function () {
     const ids = facets_ids(result['bits_data_temp'], input.filters);
     assert.deepEqual(ids, null);
 
-    result = itemsjs.search(input);
-    assert.deepEqual(result.pagination.total, 4);
+    const searchResult = itemsjs.search(input);
+    assert.deepEqual(searchResult.pagination.total, 4);
     // omit _id in search result
     //assert.deepEqual(result.data.items[0]._id, undefined);
-    assert.deepEqual(result.data.aggregations.tags.buckets[0].doc_count, 4);
-    assert.deepEqual(result.data.aggregations.tags.buckets[0].key, 'a');
+    assert.deepEqual(
+      searchResult.data.aggregations.tags.buckets[0].doc_count,
+      4
+    );
+    assert.deepEqual(searchResult.data.aggregations.tags.buckets[0].key, 'a');
 
     input = {
       filters: {
@@ -334,7 +340,7 @@ describe('disjunctive and conjunctive search', function () {
     assert.deepEqual(result.data.category.drama, [1, 4]);
 
     const ids = facets_ids(result['bits_data_temp'], input.filters);
-    assert.deepEqual(ids.array(), [1, 4]);
+    assert.deepEqual(ids!.array(), [1, 4]);
 
     done();
   });

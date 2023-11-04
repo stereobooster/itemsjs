@@ -9,25 +9,51 @@ import {
   matrix,
   parse_boolean_query,
 } from './helpers.js';
+import { Aggregation, Configuration } from './types.js';
+
+// TODO
+type FacetData<A extends string> = {
+  data: Record<A, any>,
+  bits_data: Record<A, any>,
+  bits_data_temp: Record<A, any>,
+  not_ids?: FastBitSet | null
+  ids?: FastBitSet | null
+};
 
 /**
  * responsible for making faceted search
  */
-export class Facets {
-  constructor(items, configuration) {
+export class Facets<
+  I extends Record<string, any>,
+  S extends string,
+  A extends keyof I & string,
+  I_id = I & { _id: number}
+> {
+
+  _items: I_id[];
+  config: Partial<Record<A, Aggregation>>;
+  _ids: number[];
+  _items_map: Record<number, I_id>;
+  ids_map: Record<any, number>;
+  _bits_ids: FastBitSet
+  facets: FacetData<A>
+
+  constructor(items: I[], configuration?: Configuration<I, S, A>) {
     configuration = configuration || Object.create(null);
-    configuration.aggregations = configuration.aggregations || Object.create(null);
-    this._items = items;
-    this.config = configuration.aggregations;
+    configuration!.aggregations = configuration!.aggregations || Object.create(null);
+    this._items = items as unknown as I_id[];
+    this.config = configuration!.aggregations!;
+    // @ts-expect-error TODO
     this.facets = index(items, keys(configuration.aggregations));
 
     this._items_map = Object.create(null);
     this._ids = [];
 
     let i = 1;
-    map(items, (item) => {
+    map(this._items, (item) => {
       this._ids.push(i);
       this._items_map[i] = item;
+      // @ts-expect-error not sure why TS doesn't like it
       item._id = i;
       ++i;
     });
@@ -36,7 +62,7 @@ export class Facets {
 
     if (items) {
       items.forEach((v) => {
-        const custom_id_field = configuration.custom_id_field || 'id';
+        const custom_id_field = configuration!.custom_id_field || 'id';
         if (v[custom_id_field] && v._id) {
           this.ids_map[v[custom_id_field]] = v._id;
         }
@@ -50,14 +76,14 @@ export class Facets {
     return this._items;
   }
 
-  bits_ids(ids) {
+  bits_ids(ids: number[]) {
     if (ids) {
       return new FastBitSet(ids);
     }
     return this._bits_ids;
   }
 
-  internal_ids_from_ids_map(ids) {
+  internal_ids_from_ids_map(ids: Array<any>) {
     return ids.map((v) => {
       return this.ids_map[v];
     });
@@ -67,15 +93,16 @@ export class Facets {
     return this.facets;
   }
 
-  get_item(_id) {
+  get_item(_id: number) {
     return this._items_map[_id];
   }
 
-  /*
-   *
+  /**
    * ids is optional only when there is query
+   * 
+   * TODO: fix types
    */
-  search(input, data) {
+  search(input: any, data: any) {
     const config = this.config;
     data = data || Object.create(null);
 
@@ -99,7 +126,7 @@ export class Facets {
 
     temp_facet['bits_data_temp'] = temp_data['bits_data_temp'];
 
-    mapValues(temp_facet['bits_data_temp'], function (values, key) {
+    mapValues(temp_facet['bits_data_temp'], function (values, key: A) {
       mapValues(
         temp_facet['bits_data_temp'][key],
         function (facet_indexes, key2) {
