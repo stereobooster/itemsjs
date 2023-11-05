@@ -9,7 +9,13 @@ import {
   matrix,
   parse_boolean_query,
 } from './helpers.js';
-import { Aggregation, Configuration, Item, ItemWithId } from './types.js';
+import {
+  Aggregation,
+  Configuration,
+  Item,
+  ItemWithId,
+  SearchOptions,
+} from './types.js';
 
 // TODO
 type FacetData<A extends string> = {
@@ -26,7 +32,7 @@ type FacetData<A extends string> = {
 export class Facets<
   I extends Item,
   S extends string,
-  A extends keyof I & string,
+  A extends keyof I & string
 > {
   _items: ItemWithId<I>[];
   config: Partial<Record<A, Aggregation>>;
@@ -96,10 +102,8 @@ export class Facets<
 
   /**
    * ids is optional only when there is query
-   *
-   * TODO: fix types
    */
-  search(input: any, data: any) {
+  search(input: SearchOptions<I, S, A>, data?: { query_ids?: FastBitSet, test?: boolean }) {
     const config = this.config;
     data = data || Object.create(null);
 
@@ -124,18 +128,18 @@ export class Facets<
       mapValues(
         temp_facet['bits_data_temp'][key],
         function (facet_indexes, key2) {
-          if (data.query_ids) {
+          if (data!.query_ids) {
             temp_facet['bits_data_temp'][key][key2] =
-              data.query_ids.new_intersection(
-                temp_facet['bits_data_temp'][key][key2],
+              data!.query_ids.new_intersection(
+                temp_facet['bits_data_temp'][key][key2]
               );
           }
 
-          if (data.test) {
+          if (data!.test) {
             temp_facet['data'][key][key2] =
               temp_facet['bits_data_temp'][key][key2].array();
           }
-        },
+        }
       );
     });
 

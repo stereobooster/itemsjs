@@ -4,7 +4,7 @@ export type Item = Record<string, any> & { _id?: never };
 
 export type ItemWithId<
   T extends Item = Item,
-  K extends keyof T = Exclude<keyof T, '_id'>,
+  K extends keyof T = Exclude<keyof T, '_id'>
 > = { _id: number } & {
   [KK in K]: T[K]; // eslint-disable-line no-unused-vars
 };
@@ -39,7 +39,7 @@ export interface Pagination {
 export interface SearchOptions<
   I extends Item,
   S extends string,
-  A extends keyof I & string,
+  A extends keyof I & string
 > {
   query?: string;
   /** @default 1 */
@@ -48,7 +48,7 @@ export interface SearchOptions<
   per_page?: number;
   /** The name of a sort defined in the configuration's sortings, or a new custom one */
   sort?: S | Sorting<I>;
-  filters?: Partial<Record<A, string[]>>;
+  filters?: Partial<Record<A, Array<string | number>>>;
   /** A custom function to filter values */
   filter?: (item: ItemWithId<I>) => boolean; // eslint-disable-line no-unused-vars
   /** @default false */
@@ -117,7 +117,7 @@ export interface Aggregation {
 export interface Configuration<
   I extends Item,
   S extends string,
-  A extends keyof I & string,
+  A extends keyof I & string
 > {
   sortings?: Partial<Record<S, Sorting<I>>>;
   aggregations?: Partial<Record<A, Aggregation>>;
