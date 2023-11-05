@@ -5,10 +5,10 @@ import { readFileSync } from 'node:fs';
 import { Item, Movie, Movie_id, MovieId, MovieUuid } from './fixtures/types.ts';
 import { SearchOptions } from '../src/types.ts';
 const items = JSON.parse(
-  readFileSync('./tests/fixtures/items.json').toString()
+  readFileSync('./tests/fixtures/items.json').toString(),
 ) as Item[];
 const movies = JSON.parse(
-  readFileSync('./tests/fixtures/movies.json').toString()
+  readFileSync('./tests/fixtures/movies.json').toString(),
 ) as Movie[];
 
 describe('search', function () {
@@ -250,7 +250,7 @@ describe('search', function () {
     } catch (err) {
       assert.equal(
         (err as Error).message,
-        '"query" and "filter" options are not working once native search is disabled'
+        '"query" and "filter" options are not working once native search is disabled',
       );
     }
 

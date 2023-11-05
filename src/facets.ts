@@ -26,7 +26,7 @@ type FacetData<A extends string> = {
 export class Facets<
   I extends Item,
   S extends string,
-  A extends keyof I & string
+  A extends keyof I & string,
 > {
   _items: ItemWithId<I>[];
   config: Partial<Record<A, Aggregation>>;
@@ -73,7 +73,7 @@ export class Facets<
     return this._items;
   }
 
-  bits_ids(ids: number[]) {
+  bits_ids(ids?: number[]) {
     if (ids) {
       return new FastBitSet(ids);
     }
@@ -127,7 +127,7 @@ export class Facets<
           if (data.query_ids) {
             temp_facet['bits_data_temp'][key][key2] =
               data.query_ids.new_intersection(
-                temp_facet['bits_data_temp'][key][key2]
+                temp_facet['bits_data_temp'][key][key2],
               );
           }
 
@@ -135,7 +135,7 @@ export class Facets<
             temp_facet['data'][key][key2] =
               temp_facet['bits_data_temp'][key][key2].array();
           }
-        }
+        },
       );
     });
 

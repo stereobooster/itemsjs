@@ -9,7 +9,7 @@ import { Configuration, Item, ItemWithId } from './types';
 export class Fulltext<
   I extends Item,
   S extends string,
-  A extends keyof I & string
+  A extends keyof I & string,
 > {
   items: ItemWithId<I>[];
   idx: lunr.Index;
@@ -65,14 +65,14 @@ export class Fulltext<
   }
 
   // eslint-disable-next-line no-unused-vars
-  search_full(query: string, filter?: (item: ItemWithId<I>) => boolean) {
+  search_full(query?: string, filter?: (item: ItemWithId<I>) => boolean) {
     return this.search(query, filter).map((v) => {
       return this.store[v];
     });
   }
 
   // eslint-disable-next-line no-unused-vars
-  search(query: string, filter?: (item: ItemWithId<I>) => boolean) {
+  search(query?: string, filter?: (item: ItemWithId<I>) => boolean) {
     if (!query && !filter) {
       return this.items ? this.items.map((v) => v._id) : [];
     }

@@ -1,14 +1,36 @@
 import { orderBy, intersection as _intersection } from 'lodash-es';
 import FastBitSet from 'fastbitset';
 import { getBuckets, clone } from './helpers.js';
+import {
+  AggregationOptions,
+  Configuration,
+  Item,
+  SearchOptions,
+  SimilarOptions,
+  Sorting,
+} from './types.js';
+import { Fulltext } from './fulltext.js';
+import { Facets } from './facets.js';
 
 /**
  * search by filters
  */
-export function search(items, input, configuration, fulltext, facets) {
+export function search<
+  I extends Item,
+  S extends string,
+  A extends keyof I & string
+>(
+  items: I[],
+  input: SearchOptions<I, S, A>,
+  configuration: Configuration<I, S, A>,
+  fulltext: Fulltext<I, S, A>,
+  facets: Facets<I, S, A>
+) {
   input = input || Object.create(null);
 
+  // @ts-expect-error
   const per_page = parseInt(input.per_page || 12);
+  // @ts-expect-error
   const page = parseInt(input.page || 1);
   const is_all_filtered_items = input.is_all_filtered_items || false;
 
@@ -17,7 +39,7 @@ export function search(items, input, configuration, fulltext, facets) {
     (input.query || input.filter)
   ) {
     throw new Error(
-      '"query" and "filter" options are not working once native search is disabled',
+      '"query" and "filter" options are not working once native search is disabled'
     );
   }
 
@@ -55,13 +77,13 @@ export function search(items, input, configuration, fulltext, facets) {
 
   if (facet_result.ids) {
     filtered_indexes_bitmap = filtered_indexes_bitmap.new_intersection(
-      facet_result.ids,
+      facet_result.ids
     );
   }
 
   if (facet_result.not_ids) {
     filtered_indexes_bitmap = filtered_indexes_bitmap.new_difference(
-      facet_result.not_ids,
+      facet_result.not_ids
     );
   }
 
@@ -80,10 +102,12 @@ export function search(items, input, configuration, fulltext, facets) {
   const sorting_start_time = new Date().getTime();
   let sorting_time = 0;
   if (input.sort) {
+    // @ts-expect-error
     filtered_items = sorted_items(
+      // @ts-expect-error
       filtered_items,
       input.sort,
-      configuration.sortings,
+      configuration.sortings
     );
   } else {
     if (_ids) {
@@ -93,7 +117,7 @@ export function search(items, input, configuration, fulltext, facets) {
 
       const filtered_items_indexes = filtered_indexes.slice(
         (page - 1) * per_page,
-        page * per_page,
+        page * per_page
       );
       filtered_items = filtered_items_indexes.map((_id) => {
         return facets.get_item(_id);
@@ -107,7 +131,7 @@ export function search(items, input, configuration, fulltext, facets) {
     all_filtered_items = is_all_filtered_items ? filtered_items : null;
     filtered_items = filtered_items.slice(
       (page - 1) * per_page,
-      page * per_page,
+      page * per_page
     );
   }
 
@@ -142,13 +166,21 @@ export function search(items, input, configuration, fulltext, facets) {
 /**
  * return items by sort
  */
-export function sorted_items(items, sort, sortings) {
-  if (sortings && sortings[sort]) {
-    sort = sortings[sort];
+export function sorted_items<I extends Record<string, any>, S extends string>(
+  items: I[],
+  sort: S | Sorting<I>,
+  sortings?: Partial<Record<S, Sorting<I>>>
+): I[] {
+  if (sortings && sortings[sort as S]) {
+    sort = sortings[sort as S]!;
   }
 
-  if (sort.field) {
-    return orderBy(items, sort.field, sort.order || 'asc');
+  if ((sort as Sorting<I>).field) {
+    return orderBy(
+      items,
+      (sort as Sorting<I>).field,
+      (sort as Sorting<I>).order || 'asc'
+    );
   }
 
   return items;
@@ -158,12 +190,16 @@ export function sorted_items(items, sort, sortings) {
  * returns list of elements in aggregation
  * useful for autocomplete or list all aggregation options
  */
-export function similar(items, id, options) {
+export function similar<I extends Item>(
+  items: I[],
+  id: I extends { id: infer ID } ? ID : unknown,
+  options: SimilarOptions<I>
+) {
   const per_page = options.per_page || 10;
   const minimum = options.minimum || 0;
   const page = options.page || 1;
 
-  let item;
+  let item: I;
 
   for (let i = 0; i < items.length; ++i) {
     if (items[i].id == id) {
@@ -177,13 +213,14 @@ export function similar(items, id, options) {
   }
 
   const field = options.field;
-  let sorted_items = [];
+  let sorted_items: Array<I & { intersection_length: number }> = [];
 
   for (let i = 0; i < items.length; ++i) {
     if (items[i].id !== id) {
-      const intersection = _intersection(item[field], items[i][field]);
+      const intersection = _intersection(item![field], items[i][field]);
 
       if (intersection.length >= minimum) {
+        // @ts-expect-error
         sorted_items.push(items[i]);
         sorted_items[sorted_items.length - 1].intersection_length =
           intersection.length;
@@ -209,7 +246,17 @@ export function similar(items, id, options) {
  * returns list of elements in specific facet
  * useful for autocomplete or list all aggregation options
  */
-export function aggregation(items, input, configuration, fulltext, facets) {
+export function aggregation<
+  I extends Item,
+  S extends string,
+  A extends keyof I & string
+>(
+  items: I[],
+  input: AggregationOptions<A>,
+  configuration: Configuration<I, S, A>,
+  fulltext: Fulltext<I, S, A>,
+  facets: Facets<I, S, A>
+) {
   const per_page = input.per_page || 10;
   const page = input.page || 1;
 
@@ -218,7 +265,7 @@ export function aggregation(items, input, configuration, fulltext, facets) {
     (!configuration.aggregations || !configuration.aggregations[input.name])
   ) {
     throw new Error(
-      'Please define aggregation "'.concat(input.name, '" in config'),
+      'Please define aggregation "'.concat(input.name, '" in config')
     );
   }
 
@@ -231,6 +278,7 @@ export function aggregation(items, input, configuration, fulltext, facets) {
     throw new Error('field name is required');
   }
 
+  // @ts-expect-error
   configuration.aggregations[input.name].size = 10000;
 
   const result = search(items, search_input, configuration, fulltext, facets);

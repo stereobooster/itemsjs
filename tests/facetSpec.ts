@@ -3,7 +3,9 @@ import itemsJS from '../src/index.ts';
 
 import { readFileSync } from 'node:fs';
 import { Movie } from './fixtures/types.ts';
-const items = JSON.parse(readFileSync('./tests/fixtures/movies.json').toString()) as Movie[];
+const items = JSON.parse(
+  readFileSync('./tests/fixtures/movies.json').toString(),
+) as Movie[];
 
 const configuration = {
   aggregations: {

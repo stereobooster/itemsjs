@@ -7,18 +7,17 @@ import {
   Buckets,
   Configuration,
   Item,
+  ItemWithId,
   Pagination,
   SearchAggregation,
   SearchOptions,
   SimilarOptions,
 } from './types.js';
 
-function itemsjs<
-  I extends Item,
-  S extends string,
-  A extends keyof I & string,
-  I_id = I & { _id: number}
->(items: I[], configuration?: Configuration<I, S, A>) {
+function itemsjs<I extends Item, S extends string, A extends keyof I & string>(
+  items: I[],
+  configuration?: Configuration<I, S, A>
+) {
   configuration = configuration || Object.create(null);
 
   // upsert id to items
@@ -42,8 +41,8 @@ function itemsjs<
      */
     search: function (input?: SearchOptions<I, S, A>): {
       data: {
-        items: I_id[];
-        allFilteredItems: I_id[] | null;
+        items: ItemWithId<Item>[];
+        allFilteredItems: ItemWithId<Item>[] | null;
         aggregations: Record<A, SearchAggregation<I, A>>;
       };
       pagination: Pagination;
@@ -60,7 +59,10 @@ function itemsjs<
        * merge configuration aggregation with user input
        */
       // @ts-expect-error
-      input.aggregations = mergeAggregations(configuration!.aggregations, input);
+      input.aggregations = mergeAggregations(
+        configuration!.aggregations,
+        input
+      );
 
       // @ts-expect-error
       return search(items, input, configuration, fulltext, facets);
@@ -74,7 +76,9 @@ function itemsjs<
       id: I extends { id: infer ID } ? ID : unknown,
       options: SimilarOptions<I>
     ): {
-      data: { items: Array<I_id & { intersection_length: number }> };
+      data: {
+        items: Array<I & { intersection_length: number }>;
+      };
       pagination: Pagination;
     } {
       return similar(items, id, options);
@@ -91,7 +95,7 @@ function itemsjs<
       data: { buckets: Buckets<I[A]> };
       pagination: Pagination;
     } {
-      return aggregation(items, input, configuration, fulltext, facets);
+      return aggregation(items, input, configuration!, fulltext, facets);
     },
 
     /**

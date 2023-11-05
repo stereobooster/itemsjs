@@ -13,7 +13,7 @@ describe('parsing filters to matrix', function () {
         tags: {
           conjunction: true,
         },
-      }
+      },
     );
 
     assert.deepEqual(
@@ -21,7 +21,7 @@ describe('parsing filters to matrix', function () {
         ['tags', 'novel'],
         ['tags', '90s'],
       ],
-      result
+      result,
     );
     done();
   });
@@ -37,7 +37,7 @@ describe('parsing filters to matrix', function () {
         tags: {
           conjunction: false,
         },
-      }
+      },
     );
 
     //assert.deepEqual([ [ [ 'tags', 'novel' ] ], [ [ 'tags', '90s' ] ] ], result);
@@ -48,7 +48,7 @@ describe('parsing filters to matrix', function () {
           ['tags', '90s'],
         ],
       ],
-      result
+      result,
     );
     done();
   });
@@ -68,7 +68,7 @@ describe('parsing filters to matrix', function () {
         category: {
           conjunction: true,
         },
-      }
+      },
     );
 
     assert.deepEqual([[['tags', 'novel']], ['category', 'Western']], result);
@@ -90,7 +90,7 @@ describe('parsing filters to matrix', function () {
         category: {
           conjunction: false,
         },
-      }
+      },
     );
 
     assert.deepEqual([[['tags', 'novel']], [['category', 'Western']]], result);
@@ -108,7 +108,7 @@ describe('parsing filters to matrix', function () {
         tags: {
           conjunction: true,
         },
-      }
+      },
     );
 
     assert.deepEqual(
@@ -116,7 +116,7 @@ describe('parsing filters to matrix', function () {
         ['tags', '-', 'novel'],
         ['tags', '-', '90s'],
       ],
-      result
+      result,
     );
     done();
   });
@@ -139,12 +139,12 @@ describe('parsing filters to matrix', function () {
         category: {
           conjunction: true,
         },
-      }
+      },
     );
 
     assert.deepEqual(
       [[['tags', 'novel']], ['category', 'Western'], ['tags', '-', '80s']],
-      result
+      result,
     );
     done();
   });
@@ -164,7 +164,7 @@ describe('parsing boolean queries', function () {
           ['tags', '90s'],
         ],
       ],
-      result
+      result,
     );
     done();
   });

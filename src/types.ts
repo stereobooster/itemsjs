@@ -4,7 +4,7 @@ export type Item = Record<string, any> & { _id?: never };
 
 export type ItemWithId<
   T extends Item = Item,
-  K extends keyof T = Exclude<keyof T, '_id'>
+  K extends keyof T = Exclude<keyof T, '_id'>,
 > = { _id: number } & {
   [KK in K]: T[K]; // eslint-disable-line no-unused-vars
 };
@@ -39,7 +39,7 @@ export interface Pagination {
 export interface SearchOptions<
   I extends Item,
   S extends string,
-  A extends keyof I & string
+  A extends keyof I & string,
 > {
   query?: string;
   /** @default 1 */
@@ -50,7 +50,7 @@ export interface SearchOptions<
   sort?: S | Sorting<I>;
   filters?: Partial<Record<A, string[]>>;
   /** A custom function to filter values */
-  filter?: (item: I) => boolean; // eslint-disable-line no-unused-vars
+  filter?: (item: ItemWithId<I>) => boolean; // eslint-disable-line no-unused-vars
   /** @default false */
   isExactSearch?: boolean;
   /** @default false */
@@ -91,7 +91,7 @@ export interface SimilarOptions<I extends Item> {
 export type Order = 'asc' | 'desc';
 export type Sort = 'doc_count' | 'selected' | 'key' | 'term' | 'count';
 
-export interface Sorting<I extends Item> {
+export interface Sorting<I extends Record<string, any>> {
   field: keyof I | Array<keyof I>;
   order?: Order | Order[];
 }
@@ -117,7 +117,7 @@ export interface Aggregation {
 export interface Configuration<
   I extends Item,
   S extends string,
-  A extends keyof I & string
+  A extends keyof I & string,
 > {
   sortings?: Partial<Record<S, Sorting<I>>>;
   aggregations?: Partial<Record<A, Aggregation>>;

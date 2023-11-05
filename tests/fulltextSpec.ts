@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { Fulltext } from '../src/fulltext.js';
+import { Fulltext } from '../src/fulltext.ts';
 
 describe('fulltext', function () {
   const items = [
@@ -52,7 +52,6 @@ describe('fulltext', function () {
     // @ts-expect-error
     assert.equal(fulltext.search_full('gump')[0].id, undefined);
     assert.equal(fulltext.search_full('titanic').length, 0);
-    // @ts-expect-error
     assert.equal(fulltext.search_full().length, 3);
 
     done();
@@ -68,7 +67,6 @@ describe('fulltext', function () {
     assert.equal(fulltext.search_full('gump')[0]._id, 3);
     assert.equal(fulltext.search_full('gump')[0].id, 30);
     assert.equal(fulltext.search_full('titanic').length, 0);
-    // @ts-expect-error
     assert.equal(fulltext.search_full().length, 3);
 
     done();

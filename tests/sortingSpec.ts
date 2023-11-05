@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { sorted_items } from '../src/lib.js';
+import { sorted_items } from '../src/lib.ts';
 import { map } from 'lodash-es';
 
 describe('aggregations', function () {
@@ -25,16 +25,16 @@ describe('aggregations', function () {
   it('makes items sorting', function test(done) {
     const sortings = {
       name_asc: {
-        field: 'name',
-        order: 'asc',
+        field: 'name' as const,
+        order: 'asc' as const,
       },
       name_desc: {
-        field: 'name',
-        order: 'desc',
+        field: 'name' as const,
+        order: 'desc' as const,
       },
       date_asc: {
-        field: ['date', 'name'],
-        order: ['asc', 'asc'],
+        field: ['date', 'name'] as Array<'date' | 'name'>,
+        order: ['asc', 'asc'] as Array<'desc' | 'asc'>,
       },
     };
 
@@ -49,7 +49,7 @@ describe('aggregations', function () {
     result = sorted_items(items, 'name_desc', sortings);
     assert.deepEqual(
       map(result, 'name'),
-      ['movie1', 'movie2', 'movie3', 'movie7'].reverse()
+      ['movie1', 'movie2', 'movie3', 'movie7'].reverse(),
     );
 
     result = sorted_items(items, 'date_asc', sortings);
@@ -61,8 +61,8 @@ describe('aggregations', function () {
     ]);
 
     const customSort = {
-      field: ['date', 'name'],
-      order: ['desc', 'desc'],
+      field: ['date', 'name'] as Array<'date' | 'name'>,
+      order: ['desc', 'desc'] as Array<'desc' | 'asc'>,
     };
 
     result = sorted_items(items, customSort);

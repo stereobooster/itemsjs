@@ -26,7 +26,7 @@ describe('filtering and generating facets with matrix (9 rows in dataset)', func
     assert.deepEqual(result.bits_data_temp.b['3'].array(), [2, 3, 5, 7, 8]);
     assert.deepEqual(
       result.bits_data_temp.c['3'].array(),
-      [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      [1, 2, 3, 4, 5, 6, 7, 8, 9],
     );
     done();
   });
@@ -74,7 +74,7 @@ describe('filtering and generating facets with matrix (9 rows in dataset)', func
     assert.deepEqual(result2.bits_data_temp.b['3'].array(), [2, 3, 5, 7, 8]);
     assert.deepEqual(
       result2.bits_data_temp.c['3'].array(),
-      [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      [1, 2, 3, 4, 5, 6, 7, 8, 9],
     );
     done();
   });
@@ -103,7 +103,7 @@ describe('filtering and generating facets with matrix (9 rows in dataset)', func
     assert.deepEqual(result.bits_data_temp.b['3'].array(), [2, 3, 5, 7, 8]);
     assert.deepEqual(
       result.bits_data_temp.c['3'].array(),
-      [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      [1, 2, 3, 4, 5, 6, 7, 8, 9],
     );
     done();
   });
