@@ -4,7 +4,7 @@ import {
   filters_matrix,
   filters_ids,
   parse_boolean_query,
-} from '../src/helpers.js';
+} from '../src/helpers.ts';
 
 describe('filtering matrix (9 rows in dataset)', function () {
   const items = [

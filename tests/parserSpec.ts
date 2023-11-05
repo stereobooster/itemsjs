@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { input_to_facet_filters, parse_boolean_query } from '../src/helpers.js';
+import { input_to_facet_filters, parse_boolean_query } from '../src/helpers.ts';
 
 describe('parsing filters to matrix', function () {
   it('makes conjunction', function test(done) {

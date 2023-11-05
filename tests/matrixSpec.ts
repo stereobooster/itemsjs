@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { index, matrix, combination_indexes } from '../src/helpers.js';
+import { index, matrix, combination_indexes } from '../src/helpers.ts';
 
 describe('filtering and generating facets with matrix (9 rows in dataset)', function () {
   const items = [

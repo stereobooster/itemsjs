@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import itemsJS from '../src/index.ts';
 
 import { Facets } from '../src/facets.ts';
-import { facets_ids, getBuckets } from '../src/helpers.js';
+import { facets_ids, getBuckets } from '../src/helpers.ts';
 import FastBitSet from 'fastbitset';
 
 const items = [
