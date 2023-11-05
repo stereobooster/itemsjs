@@ -4,12 +4,8 @@ import { Fulltext } from './fulltext.js';
 import { Facets } from './facets.js';
 import {
   AggregationOptions,
-  Buckets,
   Configuration,
   Item,
-  ItemWithId,
-  Pagination,
-  SearchAggregation,
   SearchOptions,
   SearchOptionsInternal,
   SimilarOptions,
@@ -40,20 +36,7 @@ function itemsjs<I extends Item, S extends string, A extends keyof I & string>(
      * sort
      * filters
      */
-    search: function (input?: SearchOptions<I, S, A>): {
-      data: {
-        items: ItemWithId<Item>[];
-        allFilteredItems: ItemWithId<Item>[] | null;
-        aggregations: Record<A, SearchAggregation<I, A>>;
-      };
-      pagination: Pagination;
-      timings: {
-        facets: number;
-        search: number;
-        sorting: number;
-        total: number;
-      };
-    } {
+    search: function (input?: SearchOptions<I, S, A>) {
       const inputInternal: SearchOptionsInternal<I, S, A> =
         input || Object.create(null);
 
@@ -65,7 +48,6 @@ function itemsjs<I extends Item, S extends string, A extends keyof I & string>(
         inputInternal
       );
 
-      // @ts-expect-error fix me
       return search(items, inputInternal, configuration!, fulltext, facets);
     },
 
@@ -75,22 +57,14 @@ function itemsjs<I extends Item, S extends string, A extends keyof I & string>(
     similar: function (
       id: I extends { id: infer ID } ? ID : unknown,
       options: SimilarOptions<I>
-    ): {
-      data: {
-        items: Array<I & { intersection_length: number }>;
-      };
-      pagination: Pagination;
-    } {
+    ) {
       return similar(items, id, options);
     },
 
     /**
      * It returns full list of filters for specific aggregation
      */
-    aggregation: function (input: AggregationOptions<I, S, A>): {
-      data: { buckets: Buckets<A> };
-      pagination: Pagination;
-    } {
+    aggregation: function (input: AggregationOptions<I, S, A>) {
       return aggregation(items, input, configuration!, fulltext, facets);
     },
 
