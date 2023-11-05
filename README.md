@@ -24,10 +24,10 @@ Ideas:
 
 ---
 
-![npm version](https://img.shields.io/npm/v/itemsjs)
-![GitHub package.json version](https://img.shields.io/github/package-json/v/itemsapi/itemsjs?label=package.json)
-[![NPM monthly downloads](https://img.shields.io/npm/dm/itemsjs.svg)](https://img.shields.io/npm/dm/itemsjs.svg)
-[![GitHub license](https://img.shields.io/github/license/itemsapi/itemsjs)](https://github.com/itemsapi/itemsjs/blob/master/LICENSE)
+![npm version](https://img.shields.io/npm/v/%40stereobooster/itemsjs)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/stereobooster/itemsjs?label=package.json)
+[![NPM monthly downloads](https://img.shields.io/npm/dm/%40stereobooster/itemsjs.svg)](https://img.shields.io/npm/dm/%40stereobooster/itemsjs.svg)
+[![GitHub license](https://img.shields.io/github/license/stereobooster/itemsjs)](https://github.com/stereobooster/itemsjs/blob/master/LICENSE)
 
 # ItemsJS - search engine in javascript
 
@@ -61,44 +61,18 @@ You can find a list of real implementations - [here](/docs/who-use-it.md)
 ### NPM
 
 ```bash
-npm install itemsjs
+npm install @stereobooster/itemsjs
 ```
 
 ```js
-const itemsjs = require('itemsjs')(data, configuration);
-const items = itemsjs.search();
-```
-
-### Client side
-
-or using from the client side:
-
-```bash
-npm install itemsjs
-```
-
-```html
-<!-- CDN -->
-<!-- unpkg: use the latest release -->
-<script src="https://unpkg.com/itemsjs@latest/dist/itemsjs.min.js"></script>
-<!-- unpkg: use a specific version -->
-<script src="https://unpkg.com/itemsjs@1.0.49/dist/itemsjs.min.js"></script>
-<!-- jsdelivr: use a specific version -->
-<script src="https://cdn.jsdelivr.net/npm/itemsjs@1.0.49/dist/itemsjs.min.js"></script>
-
-<!-- locally -->
-<script src="/node_modules/itemsjs/dist/itemsjs.js"></script>
-```
-
-```js
-itemsjs = itemsjs(data, configuration);
-itemsjs.search();
+import itemsjs from '@stereobooster/itemsjs';
+const items = itemsjs(data, configuration).search();
 ```
 
 ## Example
 
 ```bash
-npm install itemsjs
+npm install @stereobooster/itemsjs
 
 # download json data
 wget https://raw.githubusercontent.com/itemsapi/itemsapi-example-data/master/items/imdb.json -O data.json
@@ -107,9 +81,10 @@ wget https://raw.githubusercontent.com/itemsapi/itemsapi-example-data/master/ite
 Create `search.js`:
 
 ```js
+import itemsjs from '@stereobooster/itemsjs';
 const data = require('./data.json');
 
-const itemsjs = require('itemsjs')(data, {
+const index = itemsjs(data, {
   sortings: {
     name_asc: {
       field: 'name',
@@ -137,7 +112,7 @@ const itemsjs = require('itemsjs')(data, {
 /**
  * get filtered list of movies
  */
-const movies = itemsjs.search({
+const movies = index.search({
   per_page: 1,
   sort: 'name_asc',
   // full text search

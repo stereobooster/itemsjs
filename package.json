@@ -1,5 +1,5 @@
 {
-  "name": "itemsjs",
+  "name": "@stereobooster/itemsjs",
   "version": "2.1.22",
   "description": "Created to perform fast search on small json dataset (up to 1000 elements).",
   "type": "module",
@@ -26,6 +26,9 @@
   ],
   "types": "./dist/index.d.ts",
   "author": "Mateusz Rzepa",
+  "contributors": [
+    "stereobooster"
+  ],
   "license": "Apache-2.0",
   "dependencies": {
     "boolean-parser": "^0.0.2",
@@ -46,7 +49,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/itemsapi/itemsjs.git"
+    "url": "git+https://github.com/stereobooster/itemsjs.git"
   },
   "keywords": [
     "full",
@@ -58,7 +61,7 @@
     "search engine"
   ],
   "bugs": {
-    "url": "https://github.com/itemsapi/itemsjs/issues"
+    "url": "https://github.com/stereobooster/itemsjs/issues"
   },
-  "homepage": "https://github.com/itemsapi/itemsjs#readme"
+  "homepage": "https://github.com/stereobooster/itemsjs#readme"
 }
