@@ -19,7 +19,7 @@ Ideas:
   - [quick-score](https://fwextensions.github.io/quick-score-demo/)
   - etc.
 - Simplify API
-  - for example, `filters_query` doesn't have to be part of the core library. This functionality can be added on top
+  - for example, `filters_query` doesn't have to be part of the core library. This functionality can be added on top. Related [search_syntax](https://github.com/stereobooster/search_syntax)
   - `ids`, `_ids` are rquired in order to inegrate with other full-text search engines. Instead we can allow to pass adapter for search engine and hide this implementation detail
 
 ---
