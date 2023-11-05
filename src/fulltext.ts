@@ -55,7 +55,7 @@ export class Fulltext<
       item._id = i;
       ++i;
 
-      // @ts-expect-error Lunr TS signatures from wrong value
+      // @ts-expect-error ok - Lunr TS signatures from wrong version
       this.idx.add(item);
     });
 

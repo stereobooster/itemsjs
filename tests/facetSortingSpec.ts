@@ -183,7 +183,7 @@ describe('facet sorting', function () {
       name: 'genres',
       // shouldn't it be an array
       filters: {
-        // @ts-expect-error
+        // @ts-expect-error is it a bug?
         genres: ['Drama', 'Romance'],
       },
     });
@@ -208,7 +208,7 @@ describe('facet sorting', function () {
       name: 'genres',
       // shouldn't it be an array
       filters: {
-        // @ts-expect-error
+        // @ts-expect-error is it a bug?
         genres: ['Drama', 'Romance'],
       },
     });
@@ -232,7 +232,7 @@ describe('facet sorting', function () {
       name: 'genres',
       // shouldn't it be an array
       filters: {
-        // @ts-expect-error
+        // @ts-expect-error is it a bug?
         genres: ['Western'],
       },
     });

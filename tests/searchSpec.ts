@@ -40,7 +40,7 @@ describe('search', function () {
 
   it('index is empty so cannot search', function test(done) {
     try {
-      // @ts-expect-error
+      // @ts-expect-error ok
       const itemsjs = itemsJS();
       itemsjs.search();
     } catch (err) {
@@ -313,8 +313,7 @@ describe('custom fulltext integration', function () {
 
   it('makes faceted search after separated quasi fulltext with _ids', function test(done) {
     let i = 1;
-    const temp_movies = movies.map((v) => {
-      // @ts-expect-error
+    const temp_movies = movies.map((v: any) => {
       v._id = i++;
       return v as Movie_id;
     });
@@ -329,8 +328,7 @@ describe('custom fulltext integration', function () {
 
   it('makes faceted search after separated quasi fulltext with ids', function test(done) {
     let i = 10;
-    const temp_movies = movies.map((v) => {
-      // @ts-expect-error
+    const temp_movies = movies.map((v: any) => {
       v.id = i;
       i += 10;
       return v as MovieId;
@@ -358,11 +356,9 @@ describe('custom fulltext integration', function () {
 
   it('makes faceted search after separated quasi fulltext with custom id field', function test(done) {
     let i = 10;
-    const temp_movies = movies.map((v) => {
-      // @ts-expect-error
+    const temp_movies = movies.map((v: any) => {
       v.uuid = i;
       i += 10;
-      // @ts-expect-error
       delete v.id;
       return v as MovieUuid;
     });

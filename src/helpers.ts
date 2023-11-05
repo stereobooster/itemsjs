@@ -274,7 +274,7 @@ export const index = function <I extends Item, A extends keyof I & string>(
 
   items = map(items, (item) => {
     if (!item['_id']) {
-      // @ts-expect-error
+      // @ts-expect-error fix me
       item['_id'] = i;
       ++i;
     }
@@ -306,7 +306,7 @@ export const index = function <I extends Item, A extends keyof I & string>(
               facets['data'][field][v] = [];
             }
 
-            // @ts-expect-error
+            // @ts-expect-error TS knows this is a number, but JS implementation doing it to be on safe side
             facets['data'][field][v].push(parseInt(item._id));
           });
         } else if (typeof item[field] !== 'undefined') {
@@ -316,7 +316,7 @@ export const index = function <I extends Item, A extends keyof I & string>(
             facets['data'][field][v] = [];
           }
 
-          // @ts-expect-error
+          // @ts-expect-error TS knows this is a number, but JS implementation doing it to be on safe side
           facets['data'][field][v].push(parseInt(item._id));
         }
       });
@@ -462,17 +462,17 @@ export const getBuckets = function <
       } else {
         if (sort === 'term' || sort === 'key') {
           iteratees = ['key'];
-          // @ts-expect-error may be a bug
+          // @ts-expect-error is it a bug?
           sort_order = [order || 'asc'];
         } else {
           iteratees = ['doc_count', 'key'];
-          // @ts-expect-error may be a bug
+          // @ts-expect-error is it a bug?
           sort_order = [order || 'desc', 'asc'];
         }
 
         if (chosen_filters_on_top) {
           iteratees.unshift('selected');
-          // @ts-expect-error may be a bug
+          // @ts-expect-error is it a bug?
           sort_order.unshift('desc');
         }
       }
@@ -490,7 +490,7 @@ export const getBuckets = function <
         chain(v)
           .toPairs()
           .forEach((v2) => {
-            // @ts-expect-error hacky way to detect strings
+            // @ts-expect-error ok - hacky way to detect strings
             if (isNaN(v2[0])) {
               throw new Error(
                 'You cant use chars to calculate the facet_stats.'

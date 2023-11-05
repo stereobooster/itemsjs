@@ -28,9 +28,9 @@ export function search<
 ) {
   input = input || Object.create(null);
 
-  // @ts-expect-error
+  // @ts-expect-error TS knows this is a number, but JS implementation doing it to be on safe side
   const per_page = parseInt(input.per_page || 12);
-  // @ts-expect-error
+  // @ts-expect-error TS knows this is a number, but JS implementation doing it to be on safe side
   const page = parseInt(input.page || 1);
   const is_all_filtered_items = input.is_all_filtered_items || false;
 
@@ -102,9 +102,9 @@ export function search<
   const sorting_start_time = new Date().getTime();
   let sorting_time = 0;
   if (input.sort) {
-    // @ts-expect-error
+    // @ts-expect-error fix me
     filtered_items = sorted_items(
-      // @ts-expect-error
+      // @ts-expect-error fix me
       filtered_items,
       input.sort,
       configuration.sortings
@@ -220,8 +220,7 @@ export function similar<I extends Item>(
       const intersection = _intersection(item![field], items[i][field]);
 
       if (intersection.length >= minimum) {
-        // @ts-expect-error
-        sorted_items.push(items[i]);
+        sorted_items.push(items[i] as any);
         sorted_items[sorted_items.length - 1].intersection_length =
           intersection.length;
       }
@@ -278,10 +277,9 @@ export function aggregation<
     throw new Error('field name is required');
   }
 
-  // @ts-expect-error maybe a bug?
-  configuration.aggregations[input.name].size = 10000;
+  configuration!.aggregations![input.name]!.size = 10000;
 
-  // @ts-expect-error
+  // @ts-expect-error fix me
   const result = search(items, search_input, configuration, fulltext, facets);
   const buckets = result.data.aggregations[input.name].buckets;
 

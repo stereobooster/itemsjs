@@ -322,7 +322,7 @@ describe('itemjs general tests', function () {
 
     const itemsjs = itemsJS(items, {
       aggregations: {
-        // @ts-expect-error
+        // @ts-expect-error ok
         tags: {
           // type: 'terms',
           size: 10,

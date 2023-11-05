@@ -63,7 +63,7 @@ function itemsjs<I extends Item, S extends string, A extends keyof I & string>(
         input!
       );
 
-      // @ts-expect-error
+      // @ts-expect-error fix me
       return search(items, input, configuration!, fulltext, facets);
     },
 

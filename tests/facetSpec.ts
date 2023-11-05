@@ -30,7 +30,7 @@ describe('aggregation / facet', function () {
   it('makes error if name does not exist', function test(done) {
     try {
       itemsjs.aggregation({
-        // @ts-expect-error
+        // @ts-expect-error ok
         name: 'category2',
       });
     } catch (err) {

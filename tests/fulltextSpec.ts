@@ -49,7 +49,7 @@ describe('fulltext', function () {
     assert.equal(fulltext.search_full('forrest GUMP').length, 1);
     assert.equal(fulltext.search_full('gump')[0].name, 'Forrest Gump');
     assert.equal(fulltext.search_full('gump')[0]._id, 3);
-    // @ts-expect-error
+    // @ts-expect-error ok
     assert.equal(fulltext.search_full('gump')[0].id, undefined);
     assert.equal(fulltext.search_full('titanic').length, 0);
     assert.equal(fulltext.search_full().length, 3);
@@ -130,11 +130,11 @@ describe('fulltext', function () {
 
   xit('returns internal ids', function test(done) {
     const fulltext = new Fulltext(items);
-    // @ts-expect-error not implemented
+    // @ts-expect-error ok
     assert.deepEqual(fulltext.internal_ids(), [1, 2, 3]);
-    // @ts-expect-error not implemented
+    // @ts-expect-error ok
     assert.deepEqual(fulltext.bits_ids().array(), [1, 2, 3]);
-    // @ts-expect-error not implemented
+    // @ts-expect-error ok
     assert.deepEqual(fulltext.get_item(1).name, 'Godfather');
 
     done();
