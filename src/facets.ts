@@ -15,16 +15,8 @@ import {
   Item,
   ItemWithId,
   SearchOptions,
+  FacetData,
 } from './types.js';
-
-// TODO
-type FacetData<A extends string> = {
-  data: Record<A, any>;
-  bits_data: Record<A, any>;
-  bits_data_temp: Record<A, any>;
-  not_ids?: FastBitSet | null;
-  ids?: FastBitSet | null;
-};
 
 /**
  * responsible for making faceted search
@@ -47,8 +39,7 @@ export class Facets<
     configuration!.aggregations = configuration!.aggregations || Object.create(null);
     this._items = items as unknown as ItemWithId<I>[];
     this.config = configuration!.aggregations!;
-    // @ts-expect-error TODO
-    this.facets = index(items, keys(configuration.aggregations));
+    this.facets = index(items, keys(configuration!.aggregations));
 
     this._items_map = Object.create(null);
     this._ids = [];
@@ -103,7 +94,10 @@ export class Facets<
   /**
    * ids is optional only when there is query
    */
-  search(input: SearchOptions<I, S, A>, data?: { query_ids?: FastBitSet, test?: boolean }) {
+  search(
+    input: SearchOptions<I, S, A>,
+    data?: { query_ids?: FastBitSet; test?: boolean }
+  ) {
     const config = this.config;
     data = data || Object.create(null);
 
@@ -118,7 +112,7 @@ export class Facets<
     temp_data = matrix(this.facets, filters);
 
     if (input.filters_query) {
-      const filters = parse_boolean_query(input.filters_query);
+      const filters = parse_boolean_query<A>(input.filters_query);
       temp_data = filters_matrix(temp_data, filters);
     }
 
@@ -129,6 +123,7 @@ export class Facets<
         temp_facet['bits_data_temp'][key],
         function (facet_indexes, key2) {
           if (data!.query_ids) {
+            // @ts-expect-error sometimes TS doesn't make any sense
             temp_facet['bits_data_temp'][key][key2] =
               data!.query_ids.new_intersection(
                 temp_facet['bits_data_temp'][key][key2]
@@ -136,6 +131,7 @@ export class Facets<
           }
 
           if (data!.test) {
+            // @ts-expect-error sometimes TS doesn't make any sense
             temp_facet['data'][key][key2] =
               temp_facet['bits_data_temp'][key][key2].array();
           }

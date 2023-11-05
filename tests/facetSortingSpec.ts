@@ -39,7 +39,7 @@ describe('facet sorting', function () {
 
     assert.deepEqual(
       result.data.buckets.map((v) => v.key),
-      ['Comedy', 'Drama', 'Horror', 'Romance', 'Western'],
+      ['Comedy', 'Drama', 'Horror', 'Romance', 'Western']
     );
 
     done();
@@ -59,7 +59,7 @@ describe('facet sorting', function () {
 
     assert.deepEqual(
       result.data.buckets.map((v) => v.key),
-      ['Western', 'Romance', 'Horror', 'Drama', 'Comedy'],
+      ['Western', 'Romance', 'Horror', 'Drama', 'Comedy']
     );
 
     done();
@@ -79,7 +79,7 @@ describe('facet sorting', function () {
 
     assert.deepEqual(
       result.data.buckets.map((v) => v.key),
-      ['Western', 'Romance', 'Horror', 'Drama', 'Comedy'],
+      ['Western', 'Romance', 'Horror', 'Drama', 'Comedy']
     );
 
     done();
@@ -99,7 +99,7 @@ describe('facet sorting', function () {
 
     assert.deepEqual(
       result.data.buckets.map((v) => v.key),
-      ['Western', 'Comedy', 'Drama', 'Horror', 'Romance'],
+      ['Western', 'Comedy', 'Drama', 'Horror', 'Romance']
     );
 
     done();
@@ -119,7 +119,7 @@ describe('facet sorting', function () {
 
     assert.deepEqual(
       result.data.buckets.map((v) => v.key),
-      ['Western', 'Comedy', 'Drama', 'Horror', 'Romance'],
+      ['Western', 'Comedy', 'Drama', 'Horror', 'Romance']
     );
 
     done();
@@ -139,7 +139,7 @@ describe('facet sorting', function () {
 
     assert.deepEqual(
       result.data.buckets.map((v) => v.key),
-      ['Western', 'Romance', 'Horror', 'Drama', 'Comedy'],
+      ['Western', 'Romance', 'Horror', 'Drama', 'Comedy']
     );
 
     done();
@@ -181,14 +181,16 @@ describe('facet sorting', function () {
       },
     }).aggregation({
       name: 'genres',
+      // shouldn't it be an array
       filters: {
+        // @ts-expect-error
         genres: ['Drama', 'Romance'],
       },
     });
 
     assert.deepEqual(
       result.data.buckets.map((v) => v.key),
-      ['Drama', 'Romance', 'Comedy', 'Horror', 'Western'],
+      ['Drama', 'Romance', 'Comedy', 'Horror', 'Western']
     );
 
     done();
@@ -204,14 +206,16 @@ describe('facet sorting', function () {
       },
     }).aggregation({
       name: 'genres',
+      // shouldn't it be an array
       filters: {
+        // @ts-expect-error
         genres: ['Drama', 'Romance'],
       },
     });
 
     assert.deepEqual(
       result.data.buckets.map((v) => v.key),
-      ['Comedy', 'Drama', 'Horror', 'Romance', 'Western'],
+      ['Comedy', 'Drama', 'Horror', 'Romance', 'Western']
     );
 
     done();
@@ -226,14 +230,16 @@ describe('facet sorting', function () {
       },
     }).aggregation({
       name: 'genres',
+      // shouldn't it be an array
       filters: {
+        // @ts-expect-error
         genres: ['Western'],
       },
     });
 
     assert.deepEqual(
       result.data.buckets.map((v) => v.key),
-      ['Western'],
+      ['Western']
     );
 
     done();

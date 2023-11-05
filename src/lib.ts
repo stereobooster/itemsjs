@@ -158,7 +158,7 @@ export function search<
       items: filtered_items,
       allFilteredItems: all_filtered_items,
       //aggregations: aggregations,
-      aggregations: getBuckets(facet_result, input, configuration.aggregations),
+      aggregations: getBuckets(facet_result, input, configuration.aggregations!),
     },
   };
 }
@@ -278,9 +278,10 @@ export function aggregation<
     throw new Error('field name is required');
   }
 
-  // @ts-expect-error
+  // @ts-expect-error maybe a bug?
   configuration.aggregations[input.name].size = 10000;
 
+  // @ts-expect-error
   const result = search(items, search_input, configuration, fulltext, facets);
   const buckets = result.data.aggregations[input.name].buckets;
 

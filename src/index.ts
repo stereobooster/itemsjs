@@ -58,14 +58,13 @@ function itemsjs<I extends Item, S extends string, A extends keyof I & string>(
       /**
        * merge configuration aggregation with user input
        */
-      // @ts-expect-error
-      input.aggregations = mergeAggregations(
-        configuration!.aggregations,
-        input
+      input!.aggregations = mergeAggregations(
+        configuration!.aggregations!,
+        input!
       );
 
       // @ts-expect-error
-      return search(items, input, configuration, fulltext, facets);
+      return search(items, input, configuration!, fulltext, facets);
     },
 
     /**
@@ -92,7 +91,7 @@ function itemsjs<I extends Item, S extends string, A extends keyof I & string>(
      * page
      */
     aggregation: function (input: AggregationOptions<A>): {
-      data: { buckets: Buckets<I[A]> };
+      data: { buckets: Buckets<A> };
       pagination: Pagination;
     } {
       return aggregation(items, input, configuration!, fulltext, facets);

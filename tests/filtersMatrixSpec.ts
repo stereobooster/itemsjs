@@ -19,7 +19,7 @@ describe('filtering matrix (9 rows in dataset)', function () {
     { a: 2, b: 2, c: 3, d: 3 },
   ];
 
-  const fields = ['a', 'b', 'c'];
+  const fields = ['a', 'b', 'c'] as ['a', 'b', 'c'];
 
   it('checks matrix with no argument provided', function test(done) {
     const data = index(items, fields);
@@ -42,7 +42,7 @@ describe('filtering matrix (9 rows in dataset)', function () {
 
   it('filters matrix with one value', function test(done) {
     const data = index(items, fields);
-    const filters = parse_boolean_query('(a:2)');
+    const filters = parse_boolean_query<"a" | "b" | "c">('(a:2)');
 
     const result = filters_matrix(data, filters);
     assert.deepEqual(result.bits_data_temp.a['1'].array(), []);
@@ -59,7 +59,7 @@ describe('filtering matrix (9 rows in dataset)', function () {
 
   it('makes OR which returns all rows', function test(done) {
     const data = index(items, fields);
-    const filters = parse_boolean_query('(a:2) OR c:3');
+    const filters = parse_boolean_query<"a" | "b" | "c">('(a:2) OR c:3');
 
     const result = filters_matrix(data, filters);
     assert.deepEqual(result.bits_data_temp.a['1'].array(), [1, 2, 4, 6, 7]);
@@ -79,7 +79,7 @@ describe('filtering matrix (9 rows in dataset)', function () {
 
   it('makes AND which returns no result', function test(done) {
     const data = index(items, fields);
-    const filters = parse_boolean_query('a:2 AND a:1');
+    const filters = parse_boolean_query<"a" | "b" | "c">('a:2 AND a:1');
 
     const result = filters_matrix(data, filters);
     assert.deepEqual(result.bits_data_temp.a['1'].array(), []);
@@ -96,7 +96,7 @@ describe('filtering matrix (9 rows in dataset)', function () {
 
   it('makes AND with not existing value', function test(done) {
     const data = index(items, fields);
-    const filters = parse_boolean_query('a:2 AND a:10');
+    const filters = parse_boolean_query<"a" | "b" | "c">('a:2 AND a:10');
 
     const result = filters_matrix(data, filters);
     assert.deepEqual(result.bits_data_temp.a['1'].array(), []);
@@ -109,7 +109,7 @@ describe('filtering matrix (9 rows in dataset)', function () {
 
   it('filters not existing value', function test(done) {
     const data = index(items, fields);
-    const filters = parse_boolean_query('a:10');
+    const filters = parse_boolean_query<"a" | "b" | "c">('a:10');
 
     const result = filters_matrix(data, filters);
     assert.deepEqual(result.bits_data_temp.a['1'].array(), []);
@@ -122,13 +122,13 @@ describe('filtering matrix (9 rows in dataset)', function () {
 
   it('filters not existing key', function test(done) {
     const data = index(items, fields);
-    const filters = parse_boolean_query('e:10');
+    const filters = parse_boolean_query<"a" | "b" | "c">('e:10');
 
     try {
       filters_matrix(data, filters);
     } catch (err) {
       assert.equal(
-        err.message,
+        (err as Error).message,
         'Panic. The key does not exist in facets lists.',
       );
     }

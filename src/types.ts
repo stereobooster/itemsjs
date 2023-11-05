@@ -1,5 +1,7 @@
 // https://stackoverflow.com/a/63549561/1190041
 
+import FastBitSet from 'fastbitset';
+
 export type Item = Record<string, any> & { _id?: never };
 
 export type ItemWithId<
@@ -21,7 +23,7 @@ export interface SearchAggregation<I extends Item, A extends keyof I & string> {
   name: A;
   title: string;
   position: number;
-  buckets: Buckets<I[A]>;
+  buckets: Buckets<A>;
   facet_stats?: {
     min: number;
     max: number;
@@ -60,22 +62,40 @@ export interface SearchOptions<
   // TODO: documentation
   aggregations?: Partial<Record<A, AggregationOptions<A>>>;
   filters_query?: string;
-  not_filters?: Partial<Record<A, string[]>>;
+  not_filters?: Partial<Record<A, Array<string | number>>>;
   _ids?: number[];
   ids?: number[];
   custom_id_field?: string;
+  exclude_filters?: Partial<Record<A, Array<string | number>>>;
 }
 
-export interface AggregationOptions<A extends string> {
-  name?: A;
+export interface Aggregation {
   title?: string;
+  conjunction?: boolean;
+  /** @default 10 */
+  size?: number;
+  /** @default 'count' */
+  sort?: Sort | Array<Sort>;
+  /** @default 'asc' */
+  order?: Order | Array<Order>;
+  /** @default false */
+  show_facet_stats?: boolean;
+  /** @default false */
+  hide_zero_doc_count?: boolean;
+  /** @default true */
+  chosen_filters_on_top?: boolean;
+}
+
+export interface AggregationOptions<A extends string> extends Aggregation {
+  name?: A;
   /** @default 1 */
   page?: number;
   /** @default 10 */
   per_page?: number;
   query?: string;
-  conjunction?: boolean;
-  filters?: Partial<Record<A, string[]>>;
+  filters?: Array<string | number>;
+  not_filters?: Array<string | number>;
+  field?: A;
 }
 
 export interface SimilarOptions<I extends Item> {
@@ -94,23 +114,6 @@ export type Sort = 'doc_count' | 'selected' | 'key' | 'term' | 'count';
 export interface Sorting<I extends Record<string, any>> {
   field: keyof I | Array<keyof I>;
   order?: Order | Order[];
-}
-
-export interface Aggregation {
-  title?: string;
-  conjunction?: boolean;
-  /** @default 10 */
-  size?: number;
-  /** @default 'count' */
-  sort?: Sort | Array<Sort>;
-  /** @default 'asc' */
-  order?: Order | Array<Order>;
-  /** @default false */
-  show_facet_stats?: boolean;
-  /** @default false */
-  hide_zero_doc_count?: boolean;
-  /** @default true */
-  chosen_filters_on_top?: boolean;
 }
 
 /** Configuration for itemsjs */
@@ -132,3 +135,17 @@ export interface Configuration<
   /** @default false */
   removeStopWordFilter?: boolean;
 }
+
+export type FacetData<A extends string> = {
+  data: Record<A, Record<string | number, Array<any>>>;
+  bits_data: Record<A, Record<string | number, FastBitSet>>;
+  bits_data_temp: Record<A, Record<string | number, FastBitSet>>;
+  not_ids?: FastBitSet | null;
+  ids?: FastBitSet | null;
+  is_temp_copied?: boolean;
+};
+
+export type Filter<A extends string> =
+  | [A, string | number]
+  | [A, '-', string | number];
+export type Filters<A extends string> = Array<Filter<A> | Filter<A>[]>;
