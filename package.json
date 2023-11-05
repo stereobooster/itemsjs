@@ -9,7 +9,7 @@
     "lint:fix": "eslint \"**/*.{js,ts}\" --fix",
     "tsc": "tsc --noEmit",
     "prepublishOnly": "npm run build",
-    "build": "microbundle",
+    "build": "rm -rf dist && microbundle && cp src/types.ts dist",
     "dev": "microbundle watch"
   },
   "source": "src/index.ts",
