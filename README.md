@@ -1,4 +1,4 @@
-# Fork of ItemsJS (not published to npm yet)
+# Fork of ItemsJS
 
 - ported to typescript. More prcise type signature than `@types/itemsjs`
 - compiles down to ES modules. Smaller bundle size (10kb instead of 100kb)
