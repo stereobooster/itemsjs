@@ -1,3 +1,29 @@
+# Fork of ItemsJS (not published to npm yet)
+
+- ported to typescript. More prcise type signature than `@types/itemsjs`
+- compiles down to ES modules. Smaller bundle size (10kb instead of 100kb)
+- other small improvements
+
+Ideas:
+
+- Try [TypedFastBitSet.js](https://github.com/lemire/TypedFastBitSet.js) or [roaring-wasm](https://github.com/SalvatorePreviti/roaring-wasm)
+  - see [benchmark](https://github.com/lemire/TypedFastBitSet.js/tree/master/benchmark)
+- Try `Map` instead of `Object.create(null)` (`{}`)
+- Remove default dependency on `lunr.js`. For example, allow to pass `Fulltext` class to `itemsjs`, so if user don't use `lunr.js`, they don't get it in the final bundle
+- Add more dapters for full-text serach engines, for example:
+  - [orama](https://github.com/oramasearch/orama)
+  - [lunr.js v2](https://github.com/olivernn/lunr.js)
+  - [flexsearch](https://github.com/nextapps-de/flexsearch)
+  - [uFuzzy](https://github.com/leeoniya/uFuzzy)
+  - [fuse](https://github.com/krisk/fuse)
+  - [quick-score](https://fwextensions.github.io/quick-score-demo/)
+  - etc.
+- Simplify API
+  - for example, `filters_query` doesn't have to be part of the core library. This functionality can be added on top
+  - `ids`, `_ids` are rquired in order to inegrate with other full-text search engines. Instead we can allow to pass adapter for search engine and hide this implementation detail
+
+---
+
 ![npm version](https://img.shields.io/npm/v/itemsjs)
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/itemsapi/itemsjs?label=package.json)
 [![NPM monthly downloads](https://img.shields.io/npm/dm/itemsjs.svg)](https://img.shields.io/npm/dm/itemsjs.svg)
@@ -18,7 +44,7 @@ Extremely fast faceted search engine in JavaScript - lightweight, flexible, and 
 Itemsjs is being used mostly for data classification of companies, products, publications, documents, jobs or plants
 
 The solution has been implemented by people from Amazon, Hermes, Apple, Microsoft, James Cook University, Carnegie Mellon University and more.
-You can find a list of real implementations - [here](/docs/who-use-it.md) 
+You can find a list of real implementations - [here](/docs/who-use-it.md)
 
 ## Features
 
@@ -66,16 +92,7 @@ npm install itemsjs
 
 ```js
 itemsjs = itemsjs(data, configuration);
-itemsjs.search()
-```
-
-Gulp task:
-
-```javascript
-function itemjs() {
-  return src('node_modules/itemsjs/dist/itemsjs.min.js')
-      .pipe(dest('source/javascripts/'));
-}; // Will copy to source/javascripts/itemsjs.min.js
+itemsjs.search();
 ```
 
 ## Example
@@ -96,29 +113,29 @@ const itemsjs = require('itemsjs')(data, {
   sortings: {
     name_asc: {
       field: 'name',
-      order: 'asc'
-    }
+      order: 'asc',
+    },
   },
   aggregations: {
     tags: {
       title: 'Tags',
       size: 10,
-      conjunction: false
+      conjunction: false,
     },
     actors: {
       title: 'Actors',
-      size: 10
+      size: 10,
     },
     genres: {
       title: 'Genres',
-      size: 10
-    }
+      size: 10,
+    },
   },
-  searchableFields: ['name', 'tags']
+  searchableFields: ['name', 'tags'],
 });
 
 /**
- * get filtered list of movies 
+ * get filtered list of movies
  */
 const movies = itemsjs.search({
   per_page: 1,
@@ -126,18 +143,18 @@ const movies = itemsjs.search({
   // full text search
   // query: 'forrest gump',
   filters: {
-    tags: ['1980s']
-  }
-})
+    tags: ['1980s'],
+  },
+});
 console.log(JSON.stringify(movies, null, 2));
 
 /**
- * get list of top tags 
+ * get list of top tags
  */
 const top_tags = itemsjs.aggregation({
   name: 'tags',
-  per_page: 10
-})
+  per_page: 10,
+});
 console.log(JSON.stringify(top_tags, null, 2));
 ```
 
@@ -182,13 +199,13 @@ Responsible for defining global configuration. Look for full example here - [con
 
   - **`title`** Human readable filter name
   - **`size`** Number of values provided for this filter (Default: `10`)
-  - **`sort`** Values sorted by `count` (Default) or `key` for the value name. This can be also an array of keys which define the sorting priority 
-  - **`order`** `asc` | `desc`. This can be also an array of orders (if `sort` is also array) 
+  - **`sort`** Values sorted by `count` (Default) or `key` for the value name. This can be also an array of keys which define the sorting priority
+  - **`order`** `asc` | `desc`. This can be also an array of orders (if `sort` is also array)
   - **`show_facet_stats`** `true` | `false` (Default) to retrieve the min, max, avg, sum rating values from the whole filtered dataset
   - **`conjunction`** `true` (Default) stands for an _AND_ query (results have to fit all selected facet-values), `false` for an _OR_ query (results have to fit one of the selected facet-values)
   - **`chosen_filters_on_top`** `true` (Default) Filters that have been selected will appear above those not selected, `false` for filters displaying in the order set out by `sort` and `order` regardless of selected status or not
   - **`hide_zero_doc_count`** `true` | `false` (Default) Hide filters that have 0 results returned
-  
+
 - **`sortings`** you can configure different sortings like `tags_asc`, `tags_desc` with options and later use it with one key.
 
 - **`searchableFields`** an array of searchable fields.
@@ -210,14 +227,13 @@ Responsible for defining global configuration. Look for full example here - [con
 - **`query`** used for full text search.
 
 - **`sort`** used for sorting. one of `sortings` key
-  
-- **`filters`** filtering items based on specific aggregations i.e. {tags: ['drama' , 'historical']}  
+- **`filters`** filtering items based on specific aggregations i.e. {tags: ['drama' , 'historical']}
 
 - **`filter`** function responsible for items filtering. The way of working is similar to js [native filter function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter). [See example](/docs/configuration.md)
 
 - **`filters_query`** boolean filtering i.e. (tags:novel OR tags:80s) AND category:Western
 
-- **`is_all_filtered_items`** set to `true` if you want to return the whole filtered dataset. 
+- **`is_all_filtered_items`** set to `true` if you want to return the whole filtered dataset.
 
 ### `itemsjs.aggregation(options)`
 
@@ -242,7 +258,6 @@ It returns similar items to item for given id
 - **`per_page`** filters per page
 - **`page`** page number
 
-  
 ### `itemsjs.reindex(data)`
 
 It's used in case you need to reindex the whole data
