@@ -1,6 +1,6 @@
 # Fork of ItemsJS
 
-- ported to typescript. More prcise type signature than `@types/itemsjs`
+- ported to typescript. More precise type signature than `@types/itemsjs`
 - compiles down to ES modules. Smaller bundle size (10kb instead of 100kb)
 - other small improvements
 
