@@ -5,6 +5,7 @@ import {
   AggregationOptions,
   Configuration,
   Item,
+  PRecord,
   SearchOptions,
   SimilarOptions,
   Sorting,
@@ -169,7 +170,7 @@ export function search<
 export function sorted_items<I extends Record<string, any>, S extends string>(
   items: I[],
   sort: S | Sorting<I>,
-  sortings?: Partial<Record<S, Sorting<I>>>
+  sortings?: PRecord<S, Sorting<I>>
 ): I[] {
   if (sortings && sortings[sort as S]) {
     sort = sortings[sort as S]!;

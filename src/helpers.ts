@@ -22,6 +22,7 @@ import {
   Filters,
   Item,
   Order,
+  PRecord,
   SearchAggregation,
   SearchOptions,
   Sort,
@@ -370,7 +371,7 @@ export const filters_ids = function <A extends string>(
  */
 export const facets_ids = function <A extends string>(
   facets_data: Record<A, Record<string | number, FastBitSet>>,
-  filters?: Partial<Record<A, Array<string | number>>>
+  filters?: PRecord<A, Array<string | number>>
 ) {
   let output = new FastBitSet([]);
   let i = 0;
@@ -398,7 +399,7 @@ export const getBuckets = function <
 >(
   data: FacetData<A>,
   input: SearchOptions<I, S, A>,
-  aggregations: Partial<Record<A, Aggregation>>
+  aggregations: PRecord<A, Aggregation>
 ): Record<A, SearchAggregation<I, A>> {
   let position = 1;
 
@@ -530,7 +531,7 @@ export const mergeAggregations = function <
   S extends string,
   A extends keyof I & string
 >(
-  aggregations: Partial<Record<A, Aggregation>>,
+  aggregations: PRecord<A, Aggregation>,
   input: SearchOptions<I, S, A>
 ) {
   return mapValues(
@@ -560,14 +561,14 @@ export const mergeAggregations = function <
 
       return val;
     }
-  ) as unknown as Partial<Record<A, AggregationOptions<A>>>;
+  ) as any as PRecord<A, AggregationOptions<A>>;
 };
 
 export const input_to_facet_filters = function <
   I extends Item,
   S extends string,
   A extends keyof I & string
->(input: SearchOptions<I, S, A>, config: Partial<Record<A, Aggregation>>) {
+>(input: SearchOptions<I, S, A>, config: PRecord<A, Aggregation>) {
   const filters: Filters<A> = [];
 
   mapValues(input.filters, function (values: Array<string | number>, key: A) {

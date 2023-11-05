@@ -1,7 +1,10 @@
-// https://stackoverflow.com/a/63549561/1190041
-
 import FastBitSet from 'fastbitset';
 
+export type PRecord<K extends string | number | symbol, V> = Partial<
+  Record<K, V>
+>;
+
+// https://stackoverflow.com/a/63549561/1190041
 export type Item = Record<string, any> & { _id?: never };
 
 export type ItemWithId<
@@ -50,7 +53,7 @@ export interface SearchOptions<
   per_page?: number;
   /** The name of a sort defined in the configuration's sortings, or a new custom one */
   sort?: S | Sorting<I>;
-  filters?: Partial<Record<A, Array<string | number>>>;
+  filters?: PRecord<A, Array<string | number>>;
   /** A custom function to filter values */
   filter?: (item: ItemWithId<I>) => boolean; // eslint-disable-line no-unused-vars
   /** @default false */
@@ -60,13 +63,13 @@ export interface SearchOptions<
   /** @default false */
   is_all_filtered_items?: boolean;
   // TODO: documentation
-  aggregations?: Partial<Record<A, AggregationOptions<A>>>;
+  aggregations?: PRecord<A, AggregationOptions<A>>;
   filters_query?: string;
-  not_filters?: Partial<Record<A, Array<string | number>>>;
+  not_filters?: PRecord<A, Array<string | number>>;
   _ids?: number[];
   ids?: number[];
   custom_id_field?: string;
-  exclude_filters?: Partial<Record<A, Array<string | number>>>;
+  exclude_filters?: PRecord<A, Array<string | number>>;
 }
 
 export interface Aggregation {
@@ -122,8 +125,8 @@ export interface Configuration<
   S extends string,
   A extends keyof I & string
 > {
-  sortings?: Partial<Record<S, Sorting<I>>>;
-  aggregations?: Partial<Record<A, Aggregation>>;
+  sortings?: PRecord<S, Sorting<I>>;
+  aggregations?: PRecord<A, Aggregation>;
   /** @default [] */
   searchableFields?: Array<keyof I>;
   /** @default true */

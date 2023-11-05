@@ -16,6 +16,7 @@ import {
   ItemWithId,
   SearchOptions,
   FacetData,
+  PRecord,
 } from './types.js';
 
 /**
@@ -27,7 +28,7 @@ export class Facets<
   A extends keyof I & string
 > {
   _items: ItemWithId<I>[];
-  config: Partial<Record<A, Aggregation>>;
+  config: PRecord<A, Aggregation>;
   _ids: number[];
   _items_map: Record<number, ItemWithId<I>>;
   ids_map: Record<any, number>;
