@@ -19,10 +19,11 @@ export {
   Item,
 };
 
-function itemsjs<I extends Item, S extends string, A extends keyof I & string>(
+export default function itemsjs<I extends Item, S extends string, A extends keyof I & string>(
   items: I[],
   configuration?: Configuration<I, S, A>
 ) {
+  items = items || []
   configuration = configuration || Object.create(null);
 
   // upsert id to items
@@ -44,7 +45,7 @@ function itemsjs<I extends Item, S extends string, A extends keyof I & string>(
      * sort
      * filters
      */
-    search: function (input?: SearchOptions<I, S, A>) {
+    search: (input?: SearchOptions<I, S, A>) => {
       const inputInternal: SearchOptionsInternal<I, S, A> =
         input || Object.create(null);
 
@@ -62,29 +63,26 @@ function itemsjs<I extends Item, S extends string, A extends keyof I & string>(
     /**
      * It returns similar items to item for given id
      */
-    similar: function (
+    similar: (
       id: I extends { id: infer ID } ? ID : unknown,
       options: SimilarOptions<I>
-    ) {
+    ) => {
       return similar(items, id, options);
     },
 
     /**
      * It returns full list of filters for specific aggregation
      */
-    aggregation: function (input: AggregationOptions<I, S, A>) {
-      return aggregation(items, input, configuration!, fulltext, facets);
-    },
+    aggregation: (input: AggregationOptions<I, S, A>) =>
+      aggregation(items, input, configuration!, fulltext, facets),
 
     /**
      * It's used in case you need to reindex the whole data
      */
-    reindex: function (newItems: I[]) {
+    reindex: (newItems: I[]) => {
       items = newItems;
       fulltext = new Fulltext(items, configuration);
       facets = new Facets(items, configuration);
     },
   };
 }
-
-export default itemsjs;
