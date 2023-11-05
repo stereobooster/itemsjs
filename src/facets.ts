@@ -37,7 +37,8 @@ export class Facets<
 
   constructor(items: I[], configuration?: Configuration<I, S, A>) {
     configuration = configuration || Object.create(null);
-    configuration!.aggregations = configuration!.aggregations || Object.create(null);
+    configuration!.aggregations =
+      configuration!.aggregations || Object.create(null);
     this._items = items as unknown as ItemWithId<I>[];
     this.config = configuration!.aggregations!;
     this.facets = index(items, keys(configuration!.aggregations));
@@ -119,25 +120,22 @@ export class Facets<
 
     temp_facet['bits_data_temp'] = temp_data['bits_data_temp'];
 
-    mapValues(temp_facet['bits_data_temp'], function (values, key: A) {
-      mapValues(
-        temp_facet['bits_data_temp'][key],
-        function (facet_indexes, key2) {
-          if (data!.query_ids) {
-            // @ts-expect-error sometimes TS doesn't make any sense
-            temp_facet['bits_data_temp'][key][key2] =
-              data!.query_ids.new_intersection(
-                temp_facet['bits_data_temp'][key][key2]
-              );
-          }
-
-          if (data!.test) {
-            // @ts-expect-error sometimes TS doesn't make any sense
-            temp_facet['data'][key][key2] =
-              temp_facet['bits_data_temp'][key][key2].array();
-          }
+    mapValues(temp_facet['bits_data_temp'], (values, key: A) => {
+      mapValues(temp_facet['bits_data_temp'][key], (facet_indexes, key2) => {
+        if (data!.query_ids) {
+          // @ts-expect-error sometimes TS doesn't make any sense
+          temp_facet['bits_data_temp'][key][key2] =
+            data!.query_ids.new_intersection(
+              temp_facet['bits_data_temp'][key][key2]
+            );
         }
-      );
+
+        if (data!.test) {
+          // @ts-expect-error sometimes TS doesn't make any sense
+          temp_facet['data'][key][key2] =
+            temp_facet['bits_data_temp'][key][key2].array();
+        }
+      });
     });
 
     /**
