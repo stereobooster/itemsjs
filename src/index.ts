@@ -11,6 +11,14 @@ import {
   SimilarOptions,
 } from './types.js';
 
+export {
+  Configuration,
+  SearchOptions,
+  AggregationOptions,
+  SimilarOptions,
+  Item,
+};
+
 function itemsjs<I extends Item, S extends string, A extends keyof I & string>(
   items: I[],
   configuration?: Configuration<I, S, A>
