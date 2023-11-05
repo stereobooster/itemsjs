@@ -10,7 +10,7 @@ import {
   parse_boolean_query,
 } from './helpers.js';
 import {
-  Aggregation,
+  AggregationConfig,
   Configuration,
   Item,
   ItemWithId,
@@ -28,7 +28,7 @@ export class Facets<
   A extends keyof I & string
 > {
   _items: ItemWithId<I>[];
-  config: PRecord<A, Aggregation>;
+  config: PRecord<A, AggregationConfig>;
   _ids: number[];
   _items_map: Record<number, ItemWithId<I>>;
   ids_map: Record<any, number>;

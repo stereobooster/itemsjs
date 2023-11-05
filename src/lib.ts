@@ -6,7 +6,7 @@ import {
   Configuration,
   Item,
   PRecord,
-  SearchOptions,
+  SearchOptionsInternal,
   SimilarOptions,
   Sorting,
 } from './types.js';
@@ -22,7 +22,7 @@ export function search<
   A extends keyof I & string
 >(
   items: I[],
-  input: SearchOptions<I, S, A>,
+  input: SearchOptionsInternal<I, S, A>,
   configuration: Configuration<I, S, A>,
   fulltext: Fulltext<I, S, A>,
   facets: Facets<I, S, A>
@@ -159,7 +159,11 @@ export function search<
       items: filtered_items,
       allFilteredItems: all_filtered_items,
       //aggregations: aggregations,
-      aggregations: getBuckets(facet_result, input, configuration.aggregations!),
+      aggregations: getBuckets(
+        facet_result,
+        input,
+        configuration.aggregations!
+      ),
     },
   };
 }
@@ -252,7 +256,7 @@ export function aggregation<
   A extends keyof I & string
 >(
   items: I[],
-  input: AggregationOptions<A>,
+  input: AggregationOptions<I, S, A>,
   configuration: Configuration<I, S, A>,
   fulltext: Fulltext<I, S, A>,
   facets: Facets<I, S, A>
@@ -264,12 +268,10 @@ export function aggregation<
     input.name &&
     (!configuration.aggregations || !configuration.aggregations[input.name])
   ) {
-    throw new Error(
-      'Please define aggregation "'.concat(input.name, '" in config')
-    );
+    throw new Error(`Please define aggregation "${input.name}" in config`);
   }
 
-  const search_input = clone(input);
+  const search_input = clone(input) as SearchOptionsInternal<I, S, A>;
 
   search_input.page = 1;
   search_input.per_page = 0;
@@ -278,9 +280,9 @@ export function aggregation<
     throw new Error('field name is required');
   }
 
+  // mutates original config, probably will result in a bug
   configuration!.aggregations![input.name]!.size = 10000;
 
-  // @ts-expect-error fix me
   const result = search(items, search_input, configuration, fulltext, facets);
   const buckets = result.data.aggregations[input.name].buckets;
 

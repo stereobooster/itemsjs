@@ -3,12 +3,12 @@ import itemsJS from '../src/index.ts';
 import { clone } from 'lodash-es';
 import { readFileSync } from 'node:fs';
 import { Item, Movie, Movie_id, MovieId, MovieUuid } from './fixtures/types.ts';
-import { SearchOptions } from '../src/types.ts';
+import { Configuration } from '../src/types.ts';
 const items = JSON.parse(
-  readFileSync('./tests/fixtures/items.json').toString(),
+  readFileSync('./tests/fixtures/items.json').toString()
 ) as Item[];
 const movies = JSON.parse(
-  readFileSync('./tests/fixtures/movies.json').toString(),
+  readFileSync('./tests/fixtures/movies.json').toString()
 ) as Movie[];
 
 describe('search', function () {
@@ -36,7 +36,7 @@ describe('search', function () {
         conjunction: true as boolean,
       },
     },
-  } as SearchOptions<Item, string, keyof Item>;
+  } as Configuration<Item, string, keyof Item>;
 
   it('index is empty so cannot search', function test(done) {
     try {
@@ -250,7 +250,7 @@ describe('search', function () {
     } catch (err) {
       assert.equal(
         (err as Error).message,
-        '"query" and "filter" options are not working once native search is disabled',
+        '"query" and "filter" options are not working once native search is disabled'
       );
     }
 
@@ -302,7 +302,7 @@ describe('custom fulltext integration', function () {
       tags: {},
       year: {},
     },
-  } as SearchOptions<Movie, string, keyof Movie>;
+  } as Configuration<Movie, string, keyof Movie>;
 
   let itemsjs = itemsJS(movies, configuration);
 

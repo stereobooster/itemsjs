@@ -11,6 +11,7 @@ import {
   Pagination,
   SearchAggregation,
   SearchOptions,
+  SearchOptionsInternal,
   SimilarOptions,
 } from './types.js';
 
@@ -53,23 +54,23 @@ function itemsjs<I extends Item, S extends string, A extends keyof I & string>(
         total: number;
       };
     } {
-      input = input || Object.create(null);
+      const inputInternal: SearchOptionsInternal<I, S, A> =
+        input || Object.create(null);
 
       /**
        * merge configuration aggregation with user input
        */
-      input!.aggregations = mergeAggregations(
+      inputInternal.aggregations = mergeAggregations(
         configuration!.aggregations!,
-        input!
+        inputInternal
       );
 
       // @ts-expect-error fix me
-      return search(items, input, configuration!, fulltext, facets);
+      return search(items, inputInternal, configuration!, fulltext, facets);
     },
 
     /**
-     * returns list of similar elements to specified item id
-     * id
+     * It returns similar items to item for given id
      */
     similar: function (
       id: I extends { id: infer ID } ? ID : unknown,
@@ -84,13 +85,9 @@ function itemsjs<I extends Item, S extends string, A extends keyof I & string>(
     },
 
     /**
-     * returns list of elements for specific aggregation i.e. list of tags
-     * name (aggregation name)
-     * query
-     * per_page
-     * page
+     * It returns full list of filters for specific aggregation
      */
-    aggregation: function (input: AggregationOptions<A>): {
+    aggregation: function (input: AggregationOptions<I, S, A>): {
       data: { buckets: Buckets<A> };
       pagination: Pagination;
     } {
@@ -98,8 +95,7 @@ function itemsjs<I extends Item, S extends string, A extends keyof I & string>(
     },
 
     /**
-     * reindex items
-     * reinitialize fulltext search
+     * It's used in case you need to reindex the whole data
      */
     reindex: function (newItems: I[]) {
       items = newItems;

@@ -15,16 +15,18 @@ import FastBitSet from 'fastbitset';
 // @ts-ignore
 import booleanParser from 'boolean-parser';
 import {
-  Aggregation,
-  AggregationOptions,
+  AggregationConfig,
+  AggregationOptionsInternal,
   FacetData,
   Filter,
   Filters,
+  FiltersArray,
   Item,
   Order,
   PRecord,
   SearchAggregation,
   SearchOptions,
+  SearchOptionsInternal,
   Sort,
 } from './types';
 
@@ -43,11 +45,11 @@ export const humanize = function (str: string) {
 
 export const combination_indexes = function <A extends string>(
   facets: FacetData<A>,
-  filters: Filters<A>
+  filters: FiltersArray<A>
 ) {
   const indexes: Record<A, FastBitSet> = {} as any;
 
-  mapValues(filters, function (filter: Filter<A> | Filter<A>[]) {
+  mapValues(filters, function (filter: Filters<A>) {
     // filter is still array so disjunctive
     if (Array.isArray(filter[0])) {
       let facet_union = new FastBitSet([]);
@@ -71,7 +73,7 @@ export const combination_indexes = function <A extends string>(
 
 export const filters_matrix = function <A extends string>(
   facets: FacetData<A>,
-  query_filters?: Filters<A>
+  query_filters?: FiltersArray<A>
 ) {
   const temp_facet = _clone(facets);
 
@@ -90,7 +92,7 @@ export const filters_matrix = function <A extends string>(
   /**
    * process only conjunctive filters
    */
-  mapValues(query_filters, function (conjunction: Filter<A> | Filter<A>[]) {
+  mapValues(query_filters, function (conjunction: Filters<A>) {
     let conjunctive_index: FastBitSet | null = null;
 
     mapValues(conjunction, function (filter: Filter<A>) {
@@ -147,7 +149,7 @@ export const filters_matrix = function <A extends string>(
  */
 export const matrix = function <A extends string>(
   facets: FacetData<A>,
-  filters?: Filters<A>
+  filters?: FiltersArray<A>
 ) {
   const temp_facet = _clone(facets);
 
@@ -169,7 +171,7 @@ export const matrix = function <A extends string>(
   /**
    * process only conjunctive filters
    */
-  mapValues(filters, function (filter: Filter<A> | Filter<A>[]) {
+  mapValues(filters, function (filter: Filters<A>) {
     if (!Array.isArray(filter[0])) {
       const filter_key = filter[0];
       const filter_val = filter[1] as string | number;
@@ -399,7 +401,7 @@ export const getBuckets = function <
 >(
   data: FacetData<A>,
   input: SearchOptions<I, S, A>,
-  aggregations: PRecord<A, Aggregation>
+  aggregations: PRecord<A, AggregationConfig>
 ): Record<A, SearchAggregation<I, A>> {
   let position = 1;
 
@@ -531,12 +533,12 @@ export const mergeAggregations = function <
   S extends string,
   A extends keyof I & string
 >(
-  aggregations: PRecord<A, Aggregation>,
-  input: SearchOptions<I, S, A>
-) {
+  aggregations: PRecord<A, AggregationConfig>,
+  input: SearchOptionsInternal<I, S, A>
+): PRecord<A, AggregationOptionsInternal<A>> {
   return mapValues(
     clone(aggregations),
-    (val: AggregationOptions<A>, key: A) => {
+    (val: AggregationOptionsInternal<A>, key: A) => {
       if (!val.field) {
         val.field = key;
       }
@@ -561,15 +563,15 @@ export const mergeAggregations = function <
 
       return val;
     }
-  ) as any as PRecord<A, AggregationOptions<A>>;
+  ) as any;
 };
 
 export const input_to_facet_filters = function <
   I extends Item,
   S extends string,
   A extends keyof I & string
->(input: SearchOptions<I, S, A>, config: PRecord<A, Aggregation>) {
-  const filters: Filters<A> = [];
+>(input: SearchOptions<I, S, A>, config: PRecord<A, AggregationConfig>) {
+  const filters: FiltersArray<A> = [];
 
   mapValues(input.filters, function (values: Array<string | number>, key: A) {
     if (values && values.length) {
@@ -604,7 +606,7 @@ export const input_to_facet_filters = function <
 
 export const parse_boolean_query = function <A extends string>(
   query: string
-): Filters<A> {
+): FiltersArray<A> {
   const result = booleanParser.parseBooleanQuery(query);
 
   return map(result, (v1) => {
