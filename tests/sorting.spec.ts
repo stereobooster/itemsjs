@@ -1,8 +1,9 @@
+import { describe, it } from 'vitest';
 import assert from 'node:assert';
-import { sorted_items } from '../src/lib.ts';
+import { sorted_items } from '../src/lib';
 import { map } from 'lodash-es';
 
-describe('aggregations', function () {
+describe('aggregations', () => {
   const items = [
     {
       name: 'movie1',
@@ -22,7 +23,7 @@ describe('aggregations', function () {
     },
   ];
 
-  it('makes items sorting', function test(done) {
+  it('makes items sorting', () => {
     const sortings = {
       name_asc: {
         field: 'name' as const,
@@ -72,6 +73,5 @@ describe('aggregations', function () {
       'movie7',
       'movie2',
     ]);
-    done();
   });
 });

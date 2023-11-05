@@ -1,7 +1,8 @@
+import { describe, it } from 'vitest';
 import assert from 'node:assert';
-import { Fulltext } from '../src/fulltext.ts';
+import { Fulltext } from '../src/fulltext';
 
-describe('fulltext', function () {
+describe('fulltext', () => {
   const items = [
     {
       name: 'Godfather',
@@ -41,7 +42,7 @@ describe('fulltext', function () {
     { name: 'headless' },
   ];
 
-  it('checks search', function test(done) {
+  it('checks search', () => {
     const fulltext = new Fulltext(items);
     assert.equal(fulltext.search_full('club').length, 1);
     assert.equal(fulltext.search_full('gump').length, 1);
@@ -53,11 +54,9 @@ describe('fulltext', function () {
     assert.equal(fulltext.search_full('gump')[0].id, undefined);
     assert.equal(fulltext.search_full('titanic').length, 0);
     assert.equal(fulltext.search_full().length, 3);
-
-    done();
   });
 
-  it("checks search with defined id's", function test(done) {
+  it("checks search with defined id's", () => {
     const fulltext = new Fulltext(items_with_ids);
     assert.equal(fulltext.search_full('club').length, 1);
     assert.equal(fulltext.search_full('gump').length, 1);
@@ -68,22 +67,18 @@ describe('fulltext', function () {
     assert.equal(fulltext.search_full('gump')[0].id, 30);
     assert.equal(fulltext.search_full('titanic').length, 0);
     assert.equal(fulltext.search_full().length, 3);
-
-    done();
   });
 
-  it('checks search on another fields', function test(done) {
+  it('checks search on another fields', () => {
     const fulltext = new Fulltext(items, {
       searchableFields: ['name', 'tags'],
     });
     assert.equal(fulltext.search('vietnam').length, 1);
     assert.equal(fulltext.search('dark').length, 1);
     assert.equal(fulltext.search('anti').length, 1);
-
-    done();
   });
 
-  it('makes search stepping through characters', function test(done) {
+  it('makes search stepping through characters', () => {
     const fulltext = new Fulltext(specialItems, {
       searchableFields: ['name'],
       isExactSearch: true,
@@ -101,11 +96,9 @@ describe('fulltext', function () {
     assert.equal(fulltext.search('sour').length, 1);
     assert.equal(fulltext.search('sourc').length, 1);
     assert.equal(fulltext.search('source').length, 1);
-
-    done();
   });
 
-  it('makes search stepping through characters', function test(done) {
+  it('makes search stepping through characters', () => {
     const stopwordfilter = new Fulltext(specialItems, {
       searchableFields: ['name'],
     });
@@ -124,11 +117,9 @@ describe('fulltext', function () {
     assert.equal(withoutstopwordfilter.search('he').length, 1);
     assert.equal(withoutstopwordfilter.search('hea').length, 1);
     assert.equal(withoutstopwordfilter.search('head').length, 1);
-
-    done();
   });
 
-  xit('returns internal ids', function test(done) {
+  it.skip('returns internal ids', () => {
     const fulltext = new Fulltext(items);
     // @ts-expect-error ok
     assert.deepEqual(fulltext.internal_ids(), [1, 2, 3]);
@@ -136,7 +127,5 @@ describe('fulltext', function () {
     assert.deepEqual(fulltext.bits_ids().array(), [1, 2, 3]);
     // @ts-expect-error ok
     assert.deepEqual(fulltext.get_item(1).name, 'Godfather');
-
-    done();
   });
 });

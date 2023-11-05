@@ -1,8 +1,9 @@
+import { describe, it } from 'vitest';
 import assert from 'node:assert';
-import itemsJS from '../src/index.ts';
+import itemsJS from '../src/index.js';
 
 import { readFileSync } from 'node:fs';
-import { Movie } from './fixtures/types.ts';
+import { Movie } from './fixtures/types';
 const items = JSON.parse(
   readFileSync('./tests/fixtures/movies.json').toString(),
 ) as Movie[];
@@ -24,10 +25,10 @@ const configuration = {
   },
 };
 
-describe('aggregation / facet', function () {
+describe('aggregation / facet', () => {
   const itemsjs = itemsJS(items, configuration);
 
-  it('makes error if name does not exist', function test(done) {
+  it('makes error if name does not exist', () => {
     try {
       itemsjs.aggregation({
         // @ts-expect-error ok
@@ -39,21 +40,17 @@ describe('aggregation / facet', function () {
         'Please define aggregation "category2" in config',
       );
     }
-
-    done();
   });
 
-  it('makes single facet', function test(done) {
+  it('makes single facet', () => {
     const result = itemsjs.aggregation({
       name: 'genres',
     });
 
     assert.equal(result.data.buckets.length, 10);
-
-    done();
   });
 
-  it('makes single facet with pagination', function test(done) {
+  it('makes single facet with pagination', () => {
     const result = itemsjs.aggregation({
       name: 'genres',
       page: 1,
@@ -61,10 +58,9 @@ describe('aggregation / facet', function () {
     });
 
     assert.equal(result.data.buckets.length, 1);
-    done();
   });
 
-  it('makes single facet pagination', function test(done) {
+  it('makes single facet pagination', () => {
     const result = itemsjs.aggregation({
       name: 'genres',
       page: 1,
@@ -72,7 +68,5 @@ describe('aggregation / facet', function () {
     });
 
     assert.equal(result.data.buckets.length, 12);
-
-    done();
   });
 });

@@ -4,7 +4,7 @@
   "description": "Created to perform fast search on small json dataset (up to 1000 elements).",
   "type": "module",
   "scripts": {
-    "test": "ts-mocha -p tsconfig.mocha.json tests/*",
+    "test": "vitest",
     "lint": "eslint \"**/*.{js,ts}\"",
     "lint:fix": "eslint \"**/*.{js,ts}\" --fix",
     "tsc": "tsc --noEmit",
@@ -14,7 +14,7 @@
   },
   "source": "src/index.ts",
   "exports": {
-    "types": "./dist/index.d.ts", 
+    "types": "./dist/index.d.ts",
     "require": "./dist/index.cjs",
     "default": "./dist/index.modern.js"
   },
@@ -37,14 +37,12 @@
     "@types/fastbitset": "^0.2.1",
     "@types/lodash-es": "^4.17.10",
     "@types/lunr": "^2.3.6",
-    "@types/mocha": "^10.0.3",
     "@typescript-eslint/eslint-plugin": "^6.9.1",
     "@typescript-eslint/parser": "^6.9.1",
     "eslint": "^8.52.0",
     "microbundle": "^0.15.1",
-    "ts-mocha": "^10.0.0",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "vitest": "^0.34.6"
   },
   "repository": {
     "type": "git",

@@ -1,8 +1,9 @@
+import { describe, it } from 'vitest';
 import assert from 'node:assert';
-import itemsJS from '../src/index.ts';
+import itemsJS from '../src/index';
 
-import { Facets } from '../src/facets.ts';
-import { facets_ids, getBuckets } from '../src/helpers.ts';
+import { Facets } from '../src/facets';
+import { facets_ids, getBuckets } from '../src/helpers';
 import FastBitSet from 'fastbitset';
 
 const items = [
@@ -36,9 +37,9 @@ const items = [
   },
 ];
 
-describe('indexing', function () {});
+// describe('indexing', () => {});
 
-describe('conjunctive search', function () {
+describe('conjunctive search', () => {
   const aggregations = {
     tags: {
       //title: 'Tags',
@@ -61,7 +62,7 @@ describe('conjunctive search', function () {
     aggregations: aggregations,
   });
 
-  it('checks index', function test(done) {
+  it('checks index', () => {
     const result = facets.index();
     assert.deepEqual(result.data.tags.a, [1, 2, 3, 4]);
     assert.deepEqual(result.bits_data.tags.a.array(), [1, 2, 3, 4]);
@@ -75,11 +76,9 @@ describe('conjunctive search', function () {
     assert.deepEqual(result.bits_data.actors.jean.array(), [4]);
     assert.deepEqual(result.data.actors.john, [1, 2]);
     assert.deepEqual(result.bits_data.actors.john.array(), [1, 2]);
-
-    done();
   });
 
-  it('returns facets for two fields (tags, actors)', function test(done) {
+  it('returns facets for two fields (tags, actors)', () => {
     const input = {
       filters: {
         tags: ['c'],
@@ -114,14 +113,12 @@ describe('conjunctive search', function () {
     //assert.deepEqual(result.data.items[0]._id, undefined);
     assert.deepEqual(
       searchResult.data.aggregations.tags.buckets[0].doc_count,
-      3
+      3,
     );
     assert.deepEqual(searchResult.data.aggregations.tags.buckets[0].key, 'c');
-
-    done();
   });
 
-  it('checks if search is working on copy data', function test(done) {
+  it('checks if search is working on copy data', () => {
     const input = {
       filters: {
         tags: ['e'],
@@ -137,11 +134,9 @@ describe('conjunctive search', function () {
     assert.deepEqual(result.data.tags.e, [2]);
     //assert.deepEqual(result.bits_data.tags.e.array(), [2]);
     //assert.deepEqual(result.data.actors.john, [1]);
-
-    done();
   });
 
-  it('returns facets for empty input', function test(done) {
+  it('returns facets for empty input', () => {
     let input = {
       filters: {},
     };
@@ -162,7 +157,7 @@ describe('conjunctive search', function () {
     //assert.deepEqual(result.data.items[0]._id, undefined);
     assert.deepEqual(
       searchResult.data.aggregations.tags.buckets[0].doc_count,
-      4
+      4,
     );
     assert.deepEqual(searchResult.data.aggregations.tags.buckets[0].key, 'a');
 
@@ -178,11 +173,9 @@ describe('conjunctive search', function () {
 
     assert.deepEqual(result.data.tags.a, [1, 2, 3, 4]);
     assert.deepEqual(result.data.tags.e, [2]);
-
-    done();
   });
 
-  xit('returns facets for not existed filters (does not exist in index)', function test(done) {
+  it.skip('returns facets for not existed filters (does not exist in index)', () => {
     const input = {
       filters: {
         tags: ['kkk'],
@@ -195,11 +188,9 @@ describe('conjunctive search', function () {
 
     assert.deepEqual(result.data.tags.a, []);
     assert.deepEqual(result.data.tags.e, []);
-
-    done();
   });
 
-  it('returns facets for cross filters', function test(done) {
+  it('returns facets for cross filters', () => {
     const input = {
       filters: {
         tags: ['a'],
@@ -215,12 +206,10 @@ describe('conjunctive search', function () {
     assert.deepEqual(result.data.tags.e, [2]);
     assert.deepEqual(result.data.actors.john, [1, 2]);
     assert.deepEqual(result.data.actors.jean, []);
-
-    done();
   });
 });
 
-describe('disjunctive search', function () {
+describe('disjunctive search', () => {
   const aggregations = {
     tags: {
       conjunction: false,
@@ -237,7 +226,7 @@ describe('disjunctive search', function () {
     aggregations: aggregations,
   });
 
-  it('returns facets', function test(done) {
+  it('returns facets', () => {
     const input = {
       filters: {
         tags: ['c'],
@@ -252,11 +241,9 @@ describe('disjunctive search', function () {
     assert.deepEqual(result.data.tags.c, [1, 3, 4]);
     assert.deepEqual(result.data.tags.e, [2]);
     assert.deepEqual(result.data.actors.john, [1]);
-
-    done();
   });
 
-  it('returns facets for two filters', function test(done) {
+  it('returns facets for two filters', () => {
     const input = {
       filters: {
         tags: ['z', 'f'],
@@ -278,12 +265,10 @@ describe('disjunctive search', function () {
 
     assert.deepEqual(result.data.category.comedy, [2]);
     assert.deepEqual(result.data.category.drama, [4]);
-
-    done();
   });
 });
 
-describe('disjunctive and conjunctive search', function () {
+describe('disjunctive and conjunctive search', () => {
   const aggregations = {
     tags: {
       conjunction: true,
@@ -300,7 +285,7 @@ describe('disjunctive and conjunctive search', function () {
     aggregations: aggregations,
   });
 
-  it('returns facets', function test(done) {
+  it('returns facets', () => {
     const input = {
       filters: {
         tags: ['c'],
@@ -315,11 +300,9 @@ describe('disjunctive and conjunctive search', function () {
     assert.deepEqual(result.data.tags.e, []);
     assert.deepEqual(result.data.actors.john, [1]);
     assert.deepEqual(result.data.category.comedy, [3]);
-
-    done();
   });
 
-  it('returns facets for cross filters', function test(done) {
+  it('returns facets for cross filters', () => {
     const input = {
       filters: {
         tags: ['c'],
@@ -341,12 +324,10 @@ describe('disjunctive and conjunctive search', function () {
 
     const ids = facets_ids(result['bits_data_temp'], input.filters);
     assert.deepEqual(ids!.array(), [1, 4]);
-
-    done();
   });
 });
 
-describe('generates facets crossed with query', function () {
+describe('generates facets crossed with query', () => {
   const aggregations = {
     tags: {
       conjunction: true,
@@ -367,7 +348,7 @@ describe('generates facets crossed with query', function () {
     searchableFields: ['actors'],
   });
 
-  it('returns facets for searched ids', function test(done) {
+  it('returns facets for searched ids', () => {
     let input = {
       filters: {
         tags: ['c'],
@@ -398,11 +379,9 @@ describe('generates facets crossed with query', function () {
     assert.deepEqual(result.data.tags.e, []);
     assert.deepEqual(result.data.actors.john, [1]);
     assert.deepEqual(result.data.category.comedy, []);
-
-    done();
   });
 
-  it('returns facets for searched ids', function test(done) {
+  it('returns facets for searched ids', () => {
     const input = {
       query: 'john',
     };
@@ -413,12 +392,10 @@ describe('generates facets crossed with query', function () {
 
     assert.deepEqual(result.data.aggregations.tags.buckets[0].key, 'a');
     assert.deepEqual(result.data.aggregations.tags.buckets[0].doc_count, 2);
-
-    done();
   });
 });
 
-describe('generates symetrical disjunctive facets (SergeyRe)', function () {
+describe('generates symetrical disjunctive facets (SergeyRe)', () => {
   const aggregations = {
     a: {
       conjunction: false,
@@ -442,7 +419,7 @@ describe('generates symetrical disjunctive facets (SergeyRe)', function () {
   //   aggregations: aggregations,
   // });
 
-  it('provides symetrical result', function test(done) {
+  it('provides symetrical result', () => {
     const input = {
       filters: {
         b: [3],
@@ -458,7 +435,5 @@ describe('generates symetrical disjunctive facets (SergeyRe)', function () {
     assert.deepEqual(result.data.a['2'], [3]);
     assert.deepEqual(result.data.b['3'], [1]);
     assert.deepEqual(result.data.b['4'], [2]);
-
-    done();
   });
 });

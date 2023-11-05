@@ -1,5 +1,6 @@
+import { describe, it } from 'vitest';
 import assert from 'node:assert';
-import itemsJS from '../src/index.ts';
+import itemsJS from '../src/index';
 
 const items = [
   {
@@ -25,8 +26,8 @@ const items = [
   },
 ];
 
-describe('facet sorting', function () {
-  it('sort by key', function test(done) {
+describe('facet sorting', () => {
+  it('sort by key', () => {
     const result = itemsJS(items, {
       aggregations: {
         genres: {
@@ -39,13 +40,11 @@ describe('facet sorting', function () {
 
     assert.deepEqual(
       result.data.buckets.map((v) => v.key),
-      ['Comedy', 'Drama', 'Horror', 'Romance', 'Western']
+      ['Comedy', 'Drama', 'Horror', 'Romance', 'Western'],
     );
-
-    done();
   });
 
-  it('sort by key (field, not array)', function test(done) {
+  it('sort by key (field, not array)', () => {
     const result = itemsJS(items, {
       aggregations: {
         genres: {
@@ -59,13 +58,11 @@ describe('facet sorting', function () {
 
     assert.deepEqual(
       result.data.buckets.map((v) => v.key),
-      ['Western', 'Romance', 'Horror', 'Drama', 'Comedy']
+      ['Western', 'Romance', 'Horror', 'Drama', 'Comedy'],
     );
-
-    done();
   });
 
-  it('sort by key descending', function test(done) {
+  it('sort by key descending', () => {
     const result = itemsJS(items, {
       aggregations: {
         genres: {
@@ -79,13 +76,11 @@ describe('facet sorting', function () {
 
     assert.deepEqual(
       result.data.buckets.map((v) => v.key),
-      ['Western', 'Romance', 'Horror', 'Drama', 'Comedy']
+      ['Western', 'Romance', 'Horror', 'Drama', 'Comedy'],
     );
-
-    done();
   });
 
-  it('sort by doc_count', function test(done) {
+  it('sort by doc_count', () => {
     const result = itemsJS(items, {
       aggregations: {
         genres: {
@@ -99,13 +94,11 @@ describe('facet sorting', function () {
 
     assert.deepEqual(
       result.data.buckets.map((v) => v.key),
-      ['Western', 'Comedy', 'Drama', 'Horror', 'Romance']
+      ['Western', 'Comedy', 'Drama', 'Horror', 'Romance'],
     );
-
-    done();
   });
 
-  it('sort by count', function test(done) {
+  it('sort by count', () => {
     const result = itemsJS(items, {
       aggregations: {
         genres: {
@@ -119,13 +112,11 @@ describe('facet sorting', function () {
 
     assert.deepEqual(
       result.data.buckets.map((v) => v.key),
-      ['Western', 'Comedy', 'Drama', 'Horror', 'Romance']
+      ['Western', 'Comedy', 'Drama', 'Horror', 'Romance'],
     );
-
-    done();
   });
 
-  it('sort by doc_count and key and order key desc', function test(done) {
+  it('sort by doc_count and key and order key desc', () => {
     const result = itemsJS(items, {
       aggregations: {
         genres: {
@@ -139,13 +130,11 @@ describe('facet sorting', function () {
 
     assert.deepEqual(
       result.data.buckets.map((v) => v.key),
-      ['Western', 'Romance', 'Horror', 'Drama', 'Comedy']
+      ['Western', 'Romance', 'Horror', 'Drama', 'Comedy'],
     );
-
-    done();
   });
 
-  it('sort by selected, key and order by desc, asc if sort is term', function test(done) {
+  it('sort by selected, key and order by desc, asc if sort is term', () => {
     const result_array = itemsJS(items, {
       aggregations: {
         genres: {
@@ -168,11 +157,9 @@ describe('facet sorting', function () {
     });
 
     assert.deepEqual(result_array.data.buckets, result_term.data.buckets);
-
-    done();
   });
 
-  it('sort by selected if chosen_filters_on_top is not set', function test(done) {
+  it('sort by selected if chosen_filters_on_top is not set', () => {
     const result = itemsJS(items, {
       aggregations: {
         genres: {
@@ -188,13 +175,11 @@ describe('facet sorting', function () {
 
     assert.deepEqual(
       result.data.buckets.map((v) => v.key),
-      ['Drama', 'Romance', 'Comedy', 'Horror', 'Western']
+      ['Drama', 'Romance', 'Comedy', 'Horror', 'Western'],
     );
-
-    done();
   });
 
-  it('does not sort by selected if chosen_filters_on_top is false', function test(done) {
+  it('does not sort by selected if chosen_filters_on_top is false', () => {
     const result = itemsJS(items, {
       aggregations: {
         genres: {
@@ -211,13 +196,11 @@ describe('facet sorting', function () {
 
     assert.deepEqual(
       result.data.buckets.map((v) => v.key),
-      ['Comedy', 'Drama', 'Horror', 'Romance', 'Western']
+      ['Comedy', 'Drama', 'Horror', 'Romance', 'Western'],
     );
-
-    done();
   });
 
-  it('excludes filters with zero doc_count if hide_zero_doc_count is true', function test(done) {
+  it('excludes filters with zero doc_count if hide_zero_doc_count is true', () => {
     const result = itemsJS(items, {
       aggregations: {
         genres: {
@@ -233,9 +216,7 @@ describe('facet sorting', function () {
 
     assert.deepEqual(
       result.data.buckets.map((v) => v.key),
-      ['Western']
+      ['Western'],
     );
-
-    done();
   });
 });

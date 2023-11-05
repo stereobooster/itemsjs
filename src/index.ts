@@ -1,7 +1,7 @@
-import { search, similar, aggregation } from './lib.js';
-import { mergeAggregations } from './helpers.js';
-import { Fulltext } from './fulltext.js';
-import { Facets } from './facets.js';
+import { search, similar, aggregation } from './lib';
+import { mergeAggregations } from './helpers';
+import { Fulltext } from './fulltext';
+import { Facets } from './facets';
 import {
   AggregationOptions,
   Configuration,
@@ -9,7 +9,7 @@ import {
   SearchOptions,
   SearchOptionsInternal,
   SimilarOptions,
-} from './types.js';
+} from './types';
 
 export {
   Configuration,

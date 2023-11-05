@@ -1,7 +1,8 @@
+import { describe, it } from 'vitest';
 import assert from 'node:assert';
-import itemsJS from '../src/index.ts';
+import itemsJS from '../src/index';
 
-describe('itemjs general tests', function () {
+describe('itemjs general tests', () => {
   const items = [
     {
       name: 'movie1',
@@ -37,13 +38,12 @@ describe('itemjs general tests', function () {
 
   const itemsjs = itemsJS(items);
 
-  it('makes search', function test(done) {
+  it('makes search', () => {
     const result = itemsjs.search();
     assert.equal(result.data.items.length, 3);
-    done();
   });
 
-  it('makes search with pagination', function test(done) {
+  it('makes search with pagination', () => {
     let result = itemsjs.search({
       per_page: 1,
     });
@@ -60,11 +60,9 @@ describe('itemjs general tests', function () {
       page: 3,
     });
     assert.equal(result.data.items.length, 1);
-
-    done();
   });
 
-  it('makes search with pagination, and is_all_filtered_items', function test(done) {
+  it('makes search with pagination, and is_all_filtered_items', () => {
     let result = itemsjs.search({
       per_page: 1,
       is_all_filtered_items: true,
@@ -84,11 +82,9 @@ describe('itemjs general tests', function () {
     });
     assert.equal(result.data.items.length, 1);
     assert.equal(result.data.allFilteredItems, null);
-
-    done();
   });
 
-  it('makes search with pagination and filter', function test(done) {
+  it('makes search with pagination and filter', () => {
     const result = itemsjs.search({
       per_page: 1,
       page: 3,
@@ -96,11 +92,9 @@ describe('itemjs general tests', function () {
     });
 
     assert.equal(result.data.items.length, 1);
-
-    done();
   });
 
-  it('makes search with aggregation filters', function test(done) {
+  it('makes search with aggregation filters', () => {
     const itemsjs = itemsJS(items, {
       aggregations: {
         tags: {},
@@ -133,11 +127,9 @@ describe('itemjs general tests', function () {
 
     var result = itemsjs.search();
     assert.equal(result.data.items.length, 3);*/
-
-    done();
   });
 
-  it('makes search with aggregation filters with single value object', function test(done) {
+  it('makes search with aggregation filters with single value object', () => {
     const itemsjs = itemsJS(similarItems, {
       aggregations: {
         tags: {},
@@ -167,11 +159,9 @@ describe('itemjs general tests', function () {
     });
     assert.equal(result.data.aggregations.tags.buckets[0].doc_count, result.data.items.length);
     assert.equal(result.data.items.length, 1);*/
-
-    done();
   });
 
-  it('makes aggregations when configuration supplied', function test(done) {
+  it('makes aggregations when configuration supplied', () => {
     const itemsjs = itemsJS(items, {
       aggregations: {
         tags: {
@@ -186,10 +176,9 @@ describe('itemjs general tests', function () {
     assert.equal(result.data.items.length, 3);
     //assert.equal(result.data.aggregations.tags.name, 'tags');
     assert.equal(result.data.aggregations.tags.buckets.length, 6);
-    done();
   });
 
-  it('makes aggregations for non array (string) fields', function test(done) {
+  it('makes aggregations for non array (string) fields', () => {
     const items = [
       {
         name: 'movie1',
@@ -219,10 +208,9 @@ describe('itemjs general tests', function () {
     //assert.equal(result.data.aggregations.tags.name, 'tags');
     assert.equal(result.data.aggregations.tags.buckets.length, 1);
     assert.equal(result.data.aggregations.tags.buckets[0].doc_count, 3);
-    done();
   });
 
-  it('makes aggregations with facet_stats', function test(done) {
+  it('makes aggregations with facet_stats', () => {
     const items = [
       {
         name: 'Apple 7',
@@ -263,11 +251,9 @@ describe('itemjs general tests', function () {
     assert.equal(result.data.aggregations.price.facet_stats?.max, 7);
     assert.equal(result.data.aggregations.price.facet_stats?.avg, 3);
     assert.equal(result.data.aggregations.price.facet_stats?.sum, 9);
-
-    done();
   });
 
-  it('makes aggregations with facet_stats and string values', function test(done) {
+  it('makes aggregations with facet_stats and string values', () => {
     const items = [
       {
         name: 'movie1',
@@ -303,11 +289,9 @@ describe('itemjs general tests', function () {
         'You cant use chars to calculate the facet_stats.',
       );
     }
-
-    done();
   });
 
-  xit('makes aggregations for undefined field', function test(done) {
+  it.skip('makes aggregations for undefined field', () => {
     const items = [
       {
         name: 'movie1',
@@ -333,10 +317,9 @@ describe('itemjs general tests', function () {
     const result = itemsjs.search({});
     assert.equal(result.data.items.length, 3);
     //assert.equal(result.data.aggregations.tags.buckets.length, {});
-    done();
   });
 
-  it('search by tags', function test(done) {
+  it('search by tags', () => {
     const items = [
       {
         name: 'movie1',
@@ -363,7 +346,5 @@ describe('itemjs general tests', function () {
       query: 'crime',
     });
     assert.equal(result.data.items.length, 1);
-
-    done();
   });
 });

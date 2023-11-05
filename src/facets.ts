@@ -8,7 +8,7 @@ import {
   input_to_facet_filters,
   matrix,
   parse_boolean_query,
-} from './helpers.js';
+} from './helpers';
 import {
   AggregationConfig,
   Configuration,
@@ -17,7 +17,7 @@ import {
   SearchOptions,
   FacetData,
   PRecord,
-} from './types.js';
+} from './types';
 
 /**
  * responsible for making faceted search

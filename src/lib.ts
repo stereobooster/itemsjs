@@ -1,6 +1,6 @@
 import { orderBy, intersection as _intersection } from 'lodash-es';
 import FastBitSet from 'fastbitset';
-import { getBuckets, clone } from './helpers.js';
+import { getBuckets, clone } from './helpers';
 import {
   AggregationOptions,
   Configuration,
@@ -9,9 +9,9 @@ import {
   SearchOptionsInternal,
   SimilarOptions,
   Sorting,
-} from './types.js';
-import { Fulltext } from './fulltext.js';
-import { Facets } from './facets.js';
+} from './types';
+import { Fulltext } from './fulltext';
+import { Facets } from './facets';
 
 /**
  * search by filters
