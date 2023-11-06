@@ -23,7 +23,7 @@ export function search<
 >(
   items: I[],
   input: SearchOptionsInternal<I, S, A>,
-  configuration: Configuration<I, S, A>,
+  configuration: Configuration<I, S>,
   fulltext: Fulltext<I>,
   facets: Facets<I, S, A>
 ) {
@@ -257,7 +257,7 @@ export function aggregation<
 >(
   items: I[],
   input: AggregationOptions<I, S, A>,
-  configuration: Configuration<I, S, A>,
+  configuration: Configuration<I, S>,
   fulltext: Fulltext<I>,
   facets: Facets<I, S, A>
 ) {

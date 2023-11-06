@@ -11,13 +11,17 @@ import {
 } from './helpers';
 import {
   AggregationConfig,
-  Configuration,
   Item,
   ItemWithId,
   SearchOptions,
   FacetData,
   PRecord,
 } from './types';
+
+export interface FacetsConfig<I extends Item> {
+  custom_id_field?: keyof I;
+  aggregations?: PRecord<keyof I, AggregationConfig>
+}
 
 /**
  * responsible for making faceted search
@@ -35,7 +39,7 @@ export class Facets<
   _bits_ids: FastBitSet;
   facets: FacetData<A>;
 
-  constructor(items: I[], configuration?: Configuration<I, S, A>) {
+  constructor(items: I[], configuration?: FacetsConfig<I>) {
     configuration = configuration || Object.create(null);
     configuration!.aggregations =
       configuration!.aggregations || Object.create(null);

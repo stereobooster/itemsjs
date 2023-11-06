@@ -137,16 +137,12 @@ export interface Sorting<I extends Record<string, any>> {
 }
 
 /** Configuration for itemsjs */
-export interface Configuration<
-  I extends Item,
-  S extends string,
-  A extends keyof I & string
-> {
+export interface Configuration<I extends Item, S extends string> {
   /**
    * filters configuration i.e. for `tags`, `actors`, `colors`, etc. Responsible for generating facets.
    * Each filter can have it's own configuration. You can access those as `buckets` on the `search()` response.
    */
-  aggregations?: PRecord<A, AggregationConfig>;
+  aggregations?: PRecord<keyof I, AggregationConfig>;
   /**
    * you can configure different sortings like `tags_asc`, `tags_desc` with options and later use it with one key.
    */

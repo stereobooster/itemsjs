@@ -6,10 +6,10 @@ import { readFileSync } from 'node:fs';
 import { Item, Movie, Movie_id, MovieId, MovieUuid } from './fixtures/types';
 import { Configuration } from '../src/types.js';
 const items = JSON.parse(
-  readFileSync('./tests/fixtures/items.json').toString(),
+  readFileSync('./tests/fixtures/items.json').toString()
 ) as Item[];
 const movies = JSON.parse(
-  readFileSync('./tests/fixtures/movies.json').toString(),
+  readFileSync('./tests/fixtures/movies.json').toString()
 ) as Movie[];
 
 describe('search', () => {
@@ -37,7 +37,7 @@ describe('search', () => {
         conjunction: true as boolean,
       },
     },
-  } as Configuration<Item, string, keyof Item>;
+  } as Configuration<Item, string>;
 
   it('index is empty so cannot search', () => {
     try {
@@ -226,7 +226,7 @@ describe('search', () => {
     } catch (err) {
       assert.equal(
         (err as Error).message,
-        '"query" and "filter" options are not working once native search is disabled',
+        '"query" and "filter" options are not working once native search is disabled'
       );
     }
   });
@@ -267,7 +267,7 @@ describe('custom fulltext integration', () => {
       tags: {},
       year: {},
     },
-  } as Configuration<Movie, string, keyof Movie>;
+  } as Configuration<Movie, string>;
 
   it('makes faceted search after separated quasi fulltext with _ids', () => {
     const itemsjs = itemsJS(movies, configuration);
@@ -292,7 +292,10 @@ describe('custom fulltext integration', () => {
       return v as MovieId;
     });
 
-    const itemsjs = itemsJS(temp_movies, configuration);
+    const itemsjs = itemsJS(
+      temp_movies,
+      configuration as Configuration<MovieId, string>
+    );
 
     let result = itemsjs.search({
       ids: temp_movies.map((v) => v.id).slice(0, 1),
@@ -322,7 +325,10 @@ describe('custom fulltext integration', () => {
 
     configuration.custom_id_field = 'uuid';
 
-    const itemsjs = itemsJS(temp_movies, configuration);
+    const itemsjs = itemsJS(
+      temp_movies,
+      configuration as Configuration<MovieUuid, string>
+    );
 
     let result = itemsjs.search({
       ids: temp_movies.map((v) => v.uuid).slice(0, 1),

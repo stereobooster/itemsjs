@@ -21,7 +21,7 @@ export {
 
 export default function itemsjs<I extends Item, S extends string, A extends keyof I & string>(
   items: I[],
-  configuration?: Configuration<I, S, A>
+  configuration?: Configuration<I, S>
 ) {
   items = items || []
   configuration = configuration || Object.create(null);
