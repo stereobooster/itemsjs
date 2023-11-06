@@ -1,20 +1,22 @@
 import lunr from 'lunr';
-import { Configuration, Item, ItemWithId } from './types';
+import { Item, ItemWithId } from './types';
+
+export interface FulltextConfig<I extends Item> {
+  searchableFields?: Array<keyof I>;
+  isExactSearch?: boolean;
+  removeStopWordFilter?: boolean;
+}
 
 /**
  * responsible for making full text searching on items
  * config provide only searchableFields
  */
-export class Fulltext<
-  I extends Item,
-  S extends string,
-  A extends keyof I & string
-> {
+export class Fulltext<I extends Item> {
   items: ItemWithId<I>[];
   idx: lunr.Index;
   store: Record<number, ItemWithId<I>>;
 
-  constructor(items: I[], config?: Configuration<I, S, A>) {
+  constructor(items: I[], config?: FulltextConfig<I>) {
     config = config || Object.create(null);
     config!.searchableFields = config!.searchableFields || [];
     this.items = items as unknown as ItemWithId<I>[];
