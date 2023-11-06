@@ -154,7 +154,7 @@ export interface Configuration<
   /**
    * an array of searchable fields
    */
-  searchableFields?: Array<keyof I>;
+  searchableFields?: Array<A>;
   /**
    * if native full text search is enabled (`true` | `false`. It's enabled by default)
    * @default true

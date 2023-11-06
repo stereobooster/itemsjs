@@ -18,56 +18,11 @@ describe('fulltext', () => {
     },
   ];
 
-  const items_with_ids = [
-    {
-      id: 10,
-      name: 'Godfather',
-      tags: ['mafia', 'crime'],
-    },
-    {
-      id: 20,
-      name: 'Fight club',
-      tags: ['dark humor', 'anti establishment'],
-    },
-    {
-      id: 30,
-      name: 'Forrest Gump',
-      tags: ['running', 'vietnam'],
-    },
-  ];
-
   const specialItems = [
     { name: 'elation' },
     { name: 'source' },
     { name: 'headless' },
   ];
-
-  it('checks search', () => {
-    const fulltext = new Fulltext(items);
-    assert.equal(fulltext.search_full('club').length, 1);
-    assert.equal(fulltext.search_full('gump').length, 1);
-    assert.equal(fulltext.search_full('forrest gump').length, 1);
-    assert.equal(fulltext.search_full('forrest GUMP').length, 1);
-    assert.equal(fulltext.search_full('gump')[0].name, 'Forrest Gump');
-    assert.equal(fulltext.search_full('gump')[0]._id, 3);
-    // @ts-expect-error ok
-    assert.equal(fulltext.search_full('gump')[0].id, undefined);
-    assert.equal(fulltext.search_full('titanic').length, 0);
-    assert.equal(fulltext.search_full().length, 3);
-  });
-
-  it("checks search with defined id's", () => {
-    const fulltext = new Fulltext(items_with_ids);
-    assert.equal(fulltext.search_full('club').length, 1);
-    assert.equal(fulltext.search_full('gump').length, 1);
-    assert.equal(fulltext.search_full('forrest gump').length, 1);
-    assert.equal(fulltext.search_full('forrest GUMP').length, 1);
-    assert.equal(fulltext.search_full('gump')[0].name, 'Forrest Gump');
-    assert.equal(fulltext.search_full('gump')[0]._id, 3);
-    assert.equal(fulltext.search_full('gump')[0].id, 30);
-    assert.equal(fulltext.search_full('titanic').length, 0);
-    assert.equal(fulltext.search_full().length, 3);
-  });
 
   it('checks search on another fields', () => {
     const fulltext = new Fulltext(items, {

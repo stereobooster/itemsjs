@@ -1,33 +1,29 @@
 import lunr from 'lunr';
-import { Configuration, Item, ItemWithId } from './types';
+import { Item, ItemWithId } from './types';
+
+type FulltextConfiguration<A extends string> = {
+  searchableFields?: Array<A>;
+  isExactSearch?: boolean;
+  removeStopWordFilter?: boolean;
+};
 
 /**
  * responsible for making full text searching on items
  * config provide only searchableFields
  */
-export class Fulltext<
-  I extends Item,
-  S extends string,
-  A extends keyof I & string
-> {
+export class Fulltext<I extends Item, A extends keyof I & string> {
   items: ItemWithId<I>[];
   idx: lunr.Index;
-  store: Record<number, ItemWithId<I>>;
+  store: Map<number, ItemWithId<I>>;
 
-  constructor(items: I[], config?: Configuration<I, S, A>) {
-    config = config || Object.create(null);
-    config!.searchableFields = config!.searchableFields || [];
+  constructor(items: I[], config?: FulltextConfiguration<A>) {
     this.items = items as unknown as ItemWithId<I>[];
+
     // creating index
     this.idx = lunr(function () {
       // currently schema hardcoded
       this.field('name', { boost: 10 });
-      if (config!.searchableFields) {
-        config!.searchableFields?.forEach((field) => {
-          this.field(field as string);
-        });
-      }
-
+      (config?.searchableFields || []).forEach((field) => this.field(field));
       this.ref('_id');
 
       /**
@@ -35,7 +31,7 @@ export class Fulltext<
        * stemmer: https://github.com/olivernn/lunr.js/issues/328
        * stopWordFilter: https://github.com/olivernn/lunr.js/issues/233
        */
-      if (config!.isExactSearch) {
+      if (config?.isExactSearch) {
         this.pipeline.remove(lunr.stemmer);
         this.pipeline.remove(lunr.stopWordFilter);
       }
@@ -44,15 +40,14 @@ export class Fulltext<
        * Remove the stopWordFilter from the pipeline
        * stopWordFilter: https://github.com/itemsapi/itemsjs/issues/46
        */
-      if (config!.removeStopWordFilter) {
+      if (config?.removeStopWordFilter) {
         this.pipeline.remove(lunr.stopWordFilter);
       }
     });
 
+    this.store = new Map();
+
     let i = 1;
-
-    this.store = Object.create(null);
-
     this.items.map((item) => {
       item._id = i;
       ++i;
@@ -60,33 +55,33 @@ export class Fulltext<
       // @ts-expect-error ok - Lunr TS signatures from wrong version
       this.idx.add(item);
 
-      this.store[item._id] = item;
+      this.store.set(item._id, item);
     });
   }
 
   // eslint-disable-next-line no-unused-vars
-  search_full(query?: string, filter?: (item: ItemWithId<I>) => boolean) {
-    return this.search(query, filter).map((v) => this.store[v]);
-  }
-
-  // eslint-disable-next-line no-unused-vars
   search(query?: string, filter?: (item: ItemWithId<I>) => boolean) {
-    if (!query && !filter) {
-      return this.items ? this.items.map((v) => v._id) : [];
+    // 1. why do we need filter inside search class?
+    // if we would remove it we can as well remove `this.store` and `this.items`
+    // 2. we can assume that this class would get data with predefined id
+    // and we need to pass name of this id instead
+    // 3. It can return fastbitset instead of array, which would allow to cache result
+    if (!(filter instanceof Function)) {
+      if (!query) {
+        return Array.from(this.store.keys());
+      } else {
+        return this.idx
+          .search(query)
+          .map((val) => val.ref as unknown as number);
+      }
     }
 
-    let items;
+    const items = !query
+      ? this.items
+      : this.idx
+          .search(query)
+          .map((val) => this.store.get(val.ref as unknown as number)!);
 
-    if (query) {
-      items = this.idx
-        .search(query)
-        .map((val) => this.store[val.ref as unknown as number]);
-    }
-
-    if (filter instanceof Function) {
-      items = (items || this.items).filter(filter);
-    }
-
-    return items!.map((v) => v._id);
+    return items.filter(filter).map((v) => v._id);
   }
 }

@@ -29,7 +29,7 @@ export default function itemsjs<I extends Item, S extends string, A extends keyo
   // upsert id to items
   // throw error in tests if id does not exists
 
-  let fulltext: Fulltext<I, S, A>;
+  let fulltext: Fulltext<I, A>;
   if (configuration!.native_search_enabled !== false) {
     fulltext = new Fulltext(items, configuration);
   }

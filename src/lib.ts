@@ -24,7 +24,7 @@ export function search<
   items: I[],
   input: SearchOptionsInternal<I, S, A>,
   configuration: Configuration<I, S, A>,
-  fulltext: Fulltext<I, S, A>,
+  fulltext: Fulltext<I, A>,
   facets: Facets<I, S, A>
 ) {
   input = input || Object.create(null);
@@ -258,7 +258,7 @@ export function aggregation<
   items: I[],
   input: AggregationOptions<I, S, A>,
   configuration: Configuration<I, S, A>,
-  fulltext: Fulltext<I, S, A>,
+  fulltext: Fulltext<I, A>,
   facets: Facets<I, S, A>
 ) {
   const per_page = input.per_page || 10;
