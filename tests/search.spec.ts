@@ -4,7 +4,7 @@ import itemsJS from '../src/index';
 import { clone } from 'lodash-es';
 import { readFileSync } from 'node:fs';
 import { Item, Movie, Movie_id, MovieId, MovieUuid } from './fixtures/types';
-import { Configuration } from '../src/types.js';
+import { AggregationConfig, Configuration } from '../src/types.js';
 const items = JSON.parse(
   readFileSync('./tests/fixtures/items.json').toString()
 ) as Item[];
@@ -37,7 +37,11 @@ describe('search', () => {
         conjunction: true as boolean,
       },
     },
-  } as Configuration<Item, string>;
+  } as Configuration<
+    Item,
+    string,
+    { tags: {}; actors: {}; year: {}; in_cinema: {}; category: AggregationConfig }
+  >;
 
   it('index is empty so cannot search', () => {
     try {
@@ -267,7 +271,7 @@ describe('custom fulltext integration', () => {
       tags: {},
       year: {},
     },
-  } as Configuration<Movie, string>;
+  } as Configuration<Movie, string, { tags: {}; year: {} }>;
 
   it('makes faceted search after separated quasi fulltext with _ids', () => {
     const itemsjs = itemsJS(movies, configuration);
@@ -294,7 +298,11 @@ describe('custom fulltext integration', () => {
 
     const itemsjs = itemsJS(
       temp_movies,
-      configuration as Configuration<MovieId, string>
+      configuration as Configuration<
+        MovieId,
+        string,
+        { tags: {}; categories: {} }
+      >
     );
 
     let result = itemsjs.search({
@@ -327,7 +335,11 @@ describe('custom fulltext integration', () => {
 
     const itemsjs = itemsJS(
       temp_movies,
-      configuration as Configuration<MovieUuid, string>
+      configuration as Configuration<
+        MovieUuid,
+        string,
+        { tags: {}; categories: {} }
+      >
     );
 
     let result = itemsjs.search({

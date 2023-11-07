@@ -41,7 +41,7 @@ describe('filtering matrix (9 rows in dataset)', () => {
 
   it('filters matrix with one value', () => {
     const data = index(items, fields);
-    const filters = parse_boolean_query<'a' | 'b' | 'c'>('(a:2)');
+    const filters = parse_boolean_query<any>('(a:2)');
 
     const result = filters_matrix(data, filters);
     assert.deepEqual(result.bits_data_temp.a['1'].array(), []);
@@ -56,7 +56,7 @@ describe('filtering matrix (9 rows in dataset)', () => {
 
   it('makes OR which returns all rows', () => {
     const data = index(items, fields);
-    const filters = parse_boolean_query<'a' | 'b' | 'c'>('(a:2) OR c:3');
+    const filters = parse_boolean_query<any>('(a:2) OR c:3');
 
     const result = filters_matrix(data, filters);
     assert.deepEqual(result.bits_data_temp.a['1'].array(), [1, 2, 4, 6, 7]);
@@ -74,7 +74,7 @@ describe('filtering matrix (9 rows in dataset)', () => {
 
   it('makes AND which returns no result', () => {
     const data = index(items, fields);
-    const filters = parse_boolean_query<'a' | 'b' | 'c'>('a:2 AND a:1');
+    const filters = parse_boolean_query<any>('a:2 AND a:1');
 
     const result = filters_matrix(data, filters);
     assert.deepEqual(result.bits_data_temp.a['1'].array(), []);
@@ -89,7 +89,7 @@ describe('filtering matrix (9 rows in dataset)', () => {
 
   it('makes AND with not existing value', () => {
     const data = index(items, fields);
-    const filters = parse_boolean_query<'a' | 'b' | 'c'>('a:2 AND a:10');
+    const filters = parse_boolean_query<any>('a:2 AND a:10');
 
     const result = filters_matrix(data, filters);
     assert.deepEqual(result.bits_data_temp.a['1'].array(), []);
@@ -101,7 +101,7 @@ describe('filtering matrix (9 rows in dataset)', () => {
 
   it('filters not existing value', () => {
     const data = index(items, fields);
-    const filters = parse_boolean_query<'a' | 'b' | 'c'>('a:10');
+    const filters = parse_boolean_query<any>('a:10');
 
     const result = filters_matrix(data, filters);
     assert.deepEqual(result.bits_data_temp.a['1'].array(), []);
@@ -113,7 +113,7 @@ describe('filtering matrix (9 rows in dataset)', () => {
 
   it('filters not existing key', () => {
     const data = index(items, fields);
-    const filters = parse_boolean_query<'a' | 'b' | 'c'>('e:10');
+    const filters = parse_boolean_query<any>('e:10');
 
     try {
       filters_matrix(data, filters);

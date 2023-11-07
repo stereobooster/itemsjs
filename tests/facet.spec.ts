@@ -22,6 +22,9 @@ const configuration = {
     director: {
       conjunction: true,
     },
+    xxx: {
+      conjunction: true,
+    }
   },
 };
 

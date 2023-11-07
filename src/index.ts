@@ -3,6 +3,7 @@ import { mergeAggregations } from './helpers';
 import { Fulltext } from './fulltext';
 import { Facets } from './facets';
 import {
+  AggregationConfig,
   AggregationOptions,
   Configuration,
   Item,
@@ -19,9 +20,9 @@ export {
   Item,
 };
 
-export default function itemsjs<I extends Item, S extends string, A extends keyof I & string>(
+export default function itemsjs<I extends Item, S extends string, C extends { [K in keyof I]?: AggregationConfig }>(
   items: I[],
-  configuration?: Configuration<I, S>
+  configuration?: Configuration<I, S, C>
 ) {
   items = items || []
   configuration = configuration || Object.create(null);
@@ -45,8 +46,8 @@ export default function itemsjs<I extends Item, S extends string, A extends keyo
      * sort
      * filters
      */
-    search: (input?: SearchOptions<I, S, A>) => {
-      const inputInternal: SearchOptionsInternal<I, S, A> =
+    search: (input?: SearchOptions<I, S, C>) => {
+      const inputInternal: SearchOptionsInternal<I, S, C> =
         input || Object.create(null);
 
       /**
@@ -73,7 +74,7 @@ export default function itemsjs<I extends Item, S extends string, A extends keyo
     /**
      * It returns full list of filters for specific aggregation
      */
-    aggregation: (input: AggregationOptions<I, S, A>) =>
+    aggregation: (input: AggregationOptions<I, S, C>) =>
       aggregation(items, input, configuration!, fulltext, facets),
 
     /**

@@ -34,11 +34,11 @@ describe('filtering and generating facets with matrix (9 rows in dataset)', () =
   it('checks matrix with some values', () => {
     const data = index(items, fields);
 
-    const result = combination_indexes<'a' | 'b'>(data, [[['a', 2]]]);
+    const result = combination_indexes(data, [[['a', 2]]]);
     assert.deepEqual([3, 5, 8, 9], result.a.array());
     assert.deepEqual(undefined, result.b);
 
-    const result1 = matrix<'a' | 'b' | 'c'>(data, [['a', 2]]);
+    const result1 = matrix(data, [['a', 2]]);
     assert.deepEqual(result1.bits_data_temp.a['1'].array(), []);
     assert.deepEqual(result1.bits_data_temp.a['2'].array(), [3, 5, 8, 9]);
     assert.deepEqual(result1.bits_data_temp.b['2'].array(), [9]);
@@ -49,7 +49,7 @@ describe('filtering and generating facets with matrix (9 rows in dataset)', () =
   it('checks matrix with one not existing value', () => {
     const data = index(items, fields);
 
-    const result = matrix<'a' | 'b' | 'c'>(data, [
+    const result = matrix(data, [
       ['a', 2],
       ['c', 2],
     ]);
@@ -155,7 +155,7 @@ describe('filtering and generating facets for another dataset (3 rows in dataset
   it('checks matrix with one disjunctive value', () => {
     const data = index(items, fields);
 
-    const result = matrix<'a' | 'b' | 'c'>(data, [[['a', 1]]]);
+    const result = matrix(data, [[['a', 1]]]);
     assert.deepEqual(result.bits_data_temp.a['1'].array(), [1]);
     assert.deepEqual(result.bits_data_temp.a['2'].array(), [2]);
     assert.deepEqual(result.bits_data_temp.a['3'].array(), [3]);
@@ -179,7 +179,7 @@ describe('filtering and generating facets for another dataset (3 rows in dataset
 
   it('checks matrix with negative filter values', () => {
     const data = index(items, fields);
-    const result = matrix<'a' | 'b' | 'c'>(data, [['a', '-', 1]]);
+    const result = matrix(data, [['a', '-', 1]]);
     assert.deepEqual(result.bits_data_temp.a['1'].array(), []);
     assert.deepEqual(result.bits_data_temp.a['2'].array(), [2]);
     assert.deepEqual(result.bits_data_temp.a['3'].array(), [3]);
@@ -191,7 +191,7 @@ describe('filtering and generating facets for another dataset (3 rows in dataset
 
   it('checks matrix with negative filter values (2)', () => {
     const data = index(items, fields);
-    const result = matrix<'a' | 'b' | 'c'>(data, [
+    const result = matrix(data, [
       ['a', '-', 1],
       ['b', '-', 2],
     ]);
@@ -228,7 +228,7 @@ describe('filtering and generating facets (4 rows in dataset)', () => {
   it.skip('checks matrix with disjunctive values', () => {
     const data = index(items, fields);
 
-    const result = matrix<'a' | 'b'>(data, [[['a', 1]]]);
+    const result = matrix(data, [[['a', 1]]]);
     assert.deepEqual(result.bits_data_temp.a['1'].array(), [1, 2]);
     assert.deepEqual(result.bits_data_temp.a['2'].array(), [3, 4]);
     assert.deepEqual(result.bits_data_temp.b['3'].array(), [1]);

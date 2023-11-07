@@ -2,6 +2,7 @@ import { orderBy, intersection as _intersection } from 'lodash-es';
 import FastBitSet from 'fastbitset';
 import { getBuckets, clone } from './helpers';
 import {
+  AggregationConfig,
   AggregationOptions,
   Configuration,
   Item,
@@ -19,13 +20,13 @@ import { Facets } from './facets';
 export function search<
   I extends Item,
   S extends string,
-  A extends keyof I & string
+  C extends { [K in keyof I]?: AggregationConfig }
 >(
   items: I[],
-  input: SearchOptionsInternal<I, S, A>,
-  configuration: Configuration<I, S>,
+  input: SearchOptionsInternal<I, S, C>,
+  configuration: Configuration<I, S, C>,
   fulltext: Fulltext<I>,
-  facets: Facets<I, S, A>
+  facets: Facets<I, S, C>
 ) {
   input = input || Object.create(null);
 
@@ -253,13 +254,13 @@ export function similar<I extends Item>(
 export function aggregation<
   I extends Item,
   S extends string,
-  A extends keyof I & string
+  C extends { [K in keyof I]?: AggregationConfig }
 >(
   items: I[],
-  input: AggregationOptions<I, S, A>,
-  configuration: Configuration<I, S>,
+  input: AggregationOptions<I, S, C>,
+  configuration: Configuration<I, S, C>,
   fulltext: Fulltext<I>,
-  facets: Facets<I, S, A>
+  facets: Facets<I, S, C>
 ) {
   const per_page = input.per_page || 10;
   const page = input.page || 1;
@@ -268,10 +269,12 @@ export function aggregation<
     input.name &&
     (!configuration.aggregations || !configuration.aggregations[input.name])
   ) {
-    throw new Error(`Please define aggregation "${input.name}" in config`);
+    throw new Error(
+      `Please define aggregation "${input.name as string}" in config`
+    );
   }
 
-  const search_input = clone(input) as SearchOptionsInternal<I, S, A>;
+  const search_input = clone(input) as SearchOptionsInternal<I, S, C>;
 
   search_input.page = 1;
   search_input.per_page = 0;

@@ -2,11 +2,7 @@ import FastBitSet from 'fastbitset';
 
 /* ----------------------- External types ----------------------- */
 
-export interface SearchOptions<
-  I extends Item,
-  S extends string,
-  A extends keyof I & string
-> {
+export interface SearchOptions<I extends Item, S extends string,  C extends { [K in keyof I]?: AggregationConfig },> {
   /**
    * used for full text search.
    */
@@ -28,7 +24,7 @@ export interface SearchOptions<
   /**
    * filtering items based on specific aggregations i.e. `{tags: ['drama' , 'historical']}`
    */
-  filters?: PRecord<A, Array<string | number>>;
+  filters?: { [K in keyof C]?: Array<string | number>};
   /**
    * function responsible for items filtering. The way of working is similar to js [native filter function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter). [See example](https://github.com/itemsapi/itemsjs/blob/master/docs/configuration.md)
    */
@@ -44,7 +40,7 @@ export interface SearchOptions<
   is_all_filtered_items?: boolean;
   // TODO: add documentation
   // used in tests see `makes search with not filters`
-  not_filters?: PRecord<A, Array<string | number>>;
+  not_filters?: { [K in keyof C]?: Array<string | number>};
   // used in tests see `makes faceted search after separated quasi fulltext with _ids`
   _ids?: number[];
   // used in tests see `makes faceted search after separated quasi fulltext with ids`
@@ -95,15 +91,12 @@ export interface AggregationConfig {
   chosen_filters_on_top?: boolean;
 }
 
-export interface AggregationOptions<
-  I extends Item,
-  S extends string,
-  A extends keyof I & string
-> extends SearchOptions<I, S, A> {
+export interface AggregationOptions<I extends Item, S extends string, C extends { [K in keyof I]?: AggregationConfig }>
+  extends SearchOptions<I, S, C> {
   /**
    * aggregation name
    */
-  name?: A;
+  name?: keyof I;
 }
 
 export interface SimilarOptions<I extends Item> {
@@ -137,12 +130,12 @@ export interface Sorting<I extends Record<string, any>> {
 }
 
 /** Configuration for itemsjs */
-export interface Configuration<I extends Item, S extends string> {
+export interface Configuration<I extends Item, S extends string, C extends { [K in keyof I]?: AggregationConfig }> {
   /**
    * filters configuration i.e. for `tags`, `actors`, `colors`, etc. Responsible for generating facets.
    * Each filter can have it's own configuration. You can access those as `buckets` on the `search()` response.
    */
-  aggregations?: PRecord<keyof I, AggregationConfig>;
+  aggregations?: C;
   /**
    * you can configure different sortings like `tags_asc`, `tags_desc` with options and later use it with one key.
    */
@@ -188,20 +181,22 @@ export type ItemWithId<
   [KK in K]: T[K]; // eslint-disable-line no-unused-vars
 };
 
-export type FacetData<A extends string> = {
-  data: Record<A, Record<string | number, Array<any>>>;
-  bits_data: Record<A, Record<string | number, FastBitSet>>;
-  bits_data_temp: Record<A, Record<string | number, FastBitSet>>;
+export type EA<T, K = any> = T extends Array<K> ? K : T;
+
+export type FacetData<I extends Item> = {
+  data: { [K in keyof I]: Record<EA<I[K]>, Array<any>> };
+  bits_data: { [K in keyof I]: Record<EA<I[K]>, FastBitSet> };
+  bits_data_temp: { [K in keyof I]: Record<EA<I[K]>, FastBitSet> };
   not_ids?: FastBitSet | null;
   ids?: FastBitSet | null;
   is_temp_copied?: boolean;
 };
 
-export type Filter<A extends string> =
-  | [A, string | number]
-  | [A, '-', string | number];
-export type Filters<A extends string> = Filter<A> | Filter<A>[];
-export type FiltersArray<A extends string> = Array<Filters<A>>;
+export type Filter<I extends Item> =
+  | [keyof I, I[keyof I]]
+  | [keyof I, '-', I[keyof I]];
+export type Filters<I extends Item> = Filter<I> | Filter<I>[];
+export type FiltersArray<I extends Item> = Array<Filters<I>>;
 
 export interface Bucket<K> {
   key: K;
@@ -211,11 +206,11 @@ export interface Bucket<K> {
 
 export type Buckets<K> = Array<Bucket<K>>;
 
-export interface SearchAggregation<I extends Item, A extends keyof I & string> {
-  name: A;
+export interface SearchAggregation<K> {
+  name: K;
   title: string;
   position: number;
-  buckets: Buckets<A>;
+  buckets: Buckets<K>;
   facet_stats?: {
     min: number;
     max: number;
@@ -230,19 +225,15 @@ export interface Pagination {
   total: number;
 }
 
-export interface AggregationOptionsInternal<A extends string>
-  extends AggregationConfig {
-  field?: A;
+export interface AggregationOptionsInternal<K> extends AggregationConfig {
+  field?: K;
   filters: Array<string | number>;
   not_filters: Array<string | number>;
 }
 
-export interface SearchOptionsInternal<
-  I extends Item,
-  S extends string,
-  A extends keyof I & string
-> extends SearchOptions<I, S, A> {
-  aggregations?: PRecord<A, AggregationOptionsInternal<A>>;
+export interface SearchOptionsInternal<I extends Item, S extends string, C extends { [K in keyof I]?: AggregationConfig }>
+  extends SearchOptions<I, S, C> {
+  aggregations?: { [K in keyof I]?: AggregationOptionsInternal<K> };
   // alias for `not_filters`
-  exclude_filters?: PRecord<A, Array<string | number>>;
+  exclude_filters?: PRecord<keyof I, Array<string | number>>;
 }

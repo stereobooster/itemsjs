@@ -15,12 +15,12 @@ import {
   ItemWithId,
   SearchOptions,
   FacetData,
-  PRecord,
+  EA,
 } from './types';
 
-export interface FacetsConfig<I extends Item> {
+export interface FacetsConfig<I extends Item, C extends { [K in keyof I]?: AggregationConfig }> {
   custom_id_field?: keyof I;
-  aggregations?: PRecord<keyof I, AggregationConfig>
+  aggregations?: C;
 }
 
 /**
@@ -29,17 +29,17 @@ export interface FacetsConfig<I extends Item> {
 export class Facets<
   I extends Item,
   S extends string,
-  A extends keyof I & string
+  C extends { [K in keyof I]?: AggregationConfig }
 > {
   _items: ItemWithId<I>[];
-  config: PRecord<A, AggregationConfig>;
+  config: C;
   _ids: number[];
   _items_map: Record<number, ItemWithId<I>>;
   ids_map: Record<any, number>;
   _bits_ids: FastBitSet;
-  facets: FacetData<A>;
+  facets: FacetData<I>;
 
-  constructor(items: I[], configuration?: FacetsConfig<I>) {
+  constructor(items: I[], configuration?: FacetsConfig<I, C>) {
     configuration = configuration || Object.create(null);
     configuration!.aggregations =
       configuration!.aggregations || Object.create(null);
@@ -101,7 +101,7 @@ export class Facets<
    * ids is optional only when there is query
    */
   search(
-    input: SearchOptions<I, S, A>,
+    input: SearchOptions<I, S, C>,
     data?: { query_ids?: FastBitSet; test?: boolean }
   ) {
     const config = this.config;
@@ -118,28 +118,29 @@ export class Facets<
     temp_data = matrix(this.facets, filters);
 
     if (input.filters_query) {
-      const filters = parse_boolean_query<A>(input.filters_query);
+      const filters = parse_boolean_query<I>(input.filters_query);
       temp_data = filters_matrix(temp_data, filters);
     }
 
     temp_facet['bits_data_temp'] = temp_data['bits_data_temp'];
 
-    mapValues(temp_facet['bits_data_temp'], (values, key: A) => {
-      mapValues(temp_facet['bits_data_temp'][key], (facet_indexes, key2) => {
-        if (data!.query_ids) {
-          // @ts-expect-error sometimes TS doesn't make any sense
-          temp_facet['bits_data_temp'][key][key2] =
-            data!.query_ids.new_intersection(
-              temp_facet['bits_data_temp'][key][key2]
-            );
-        }
+    mapValues(temp_facet['bits_data_temp'], (values, key: keyof I) => {
+      mapValues(
+        temp_facet['bits_data_temp'][key],
+        (facet_indexes, key2: EA<I[keyof I]>) => {
+          if (data!.query_ids) {
+            temp_facet['bits_data_temp'][key][key2] =
+              data!.query_ids.new_intersection(
+                temp_facet['bits_data_temp'][key][key2]
+              );
+          }
 
-        if (data!.test) {
-          // @ts-expect-error sometimes TS doesn't make any sense
-          temp_facet['data'][key][key2] =
-            temp_facet['bits_data_temp'][key][key2].array();
+          if (data!.test) {
+            temp_facet['data'][key][key2] =
+              temp_facet['bits_data_temp'][key][key2].array();
+          }
         }
-      });
+      );
     });
 
     /**

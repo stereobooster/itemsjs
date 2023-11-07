@@ -43,21 +43,21 @@ export function humanize(str: string) {
     });
 }
 
-export function combination_indexes<A extends string>(
-  facets: FacetData<A>,
-  filters: FiltersArray<A>
+export function combination_indexes<I extends Item>(
+  facets: FacetData<I>,
+  filters: FiltersArray<I>
 ) {
-  const indexes: Record<A, FastBitSet> = {} as any;
+  const indexes: { [K in keyof I]: FastBitSet } = {} as any;
 
-  mapValues(filters, (filter: Filters<A>) => {
+  mapValues(filters, (filter: Filters<I>) => {
     // filter is still array so disjunctive
     if (Array.isArray(filter[0])) {
       let facet_union = new FastBitSet([]);
       const filter_keys = [];
 
-      mapValues(filter, (disjunctive_filter: Filter<A>) => {
+      mapValues(filter, (disjunctive_filter: Filter<I>) => {
         const filter_key = disjunctive_filter[0];
-        const filter_val = disjunctive_filter[1];
+        const filter_val = disjunctive_filter[1] as I[keyof I];
 
         filter_keys.push(filter_key);
         facet_union = facet_union.new_union(
@@ -71,19 +71,21 @@ export function combination_indexes<A extends string>(
   return indexes;
 }
 
-export function filters_matrix<A extends string>(
-  facets: FacetData<A>,
-  query_filters?: FiltersArray<A>
+export function filters_matrix<I extends Item>(
+  facets: FacetData<I>,
+  query_filters?: FiltersArray<I>
 ) {
   const temp_facet = _clone(facets);
 
   if (!temp_facet['is_temp_copied']) {
-    mapValues(temp_facet['bits_data'], (values, key: A) => {
-      mapValues(temp_facet['bits_data'][key], (facet_indexes, key2) => {
-        // @ts-expect-error sometimes TS doesn't make any sense
-        temp_facet['bits_data_temp'][key][key2] =
-          temp_facet['bits_data'][key][key2];
-      });
+    mapValues(temp_facet['bits_data'], (values, key: keyof I) => {
+      mapValues(
+        temp_facet['bits_data'][key],
+        (facet_indexes, key2: I[keyof I]) => {
+          temp_facet['bits_data_temp'][key][key2] =
+            temp_facet['bits_data'][key][key2];
+        }
+      );
     });
   }
 
@@ -92,12 +94,12 @@ export function filters_matrix<A extends string>(
   /**
    * process only conjunctive filters
    */
-  mapValues(query_filters, (conjunction: Filters<A>) => {
+  mapValues(query_filters, (conjunction: Filters<I>) => {
     let conjunctive_index: FastBitSet | null = null;
 
-    mapValues(conjunction, (filter: Filter<A>) => {
+    mapValues(conjunction, (filter: Filter<I>) => {
       const filter_key = filter[0];
-      const filter_val = filter[1];
+      const filter_val = filter[1] as I[keyof I];
 
       if (!temp_facet['bits_data_temp'][filter_key]) {
         throw new Error('Panic. The key does not exist in facets lists.');
@@ -128,13 +130,15 @@ export function filters_matrix<A extends string>(
   });
 
   if (union !== null) {
-    mapValues(temp_facet['bits_data_temp'], (values, key: A) => {
-      mapValues(temp_facet['bits_data_temp'][key], (facet_indexes, key2) => {
-        // @ts-expect-error sometimes TS doesn't make any sense
-        temp_facet['bits_data_temp'][key][key2] = temp_facet['bits_data_temp'][
-          key
-        ][key2].new_intersection(union!);
-      });
+    mapValues(temp_facet['bits_data_temp'], (values, key: keyof I) => {
+      mapValues(
+        temp_facet['bits_data_temp'][key],
+        (facet_indexes, key2: I[keyof I]) => {
+          temp_facet['bits_data_temp'][key][key2] = temp_facet[
+            'bits_data_temp'
+          ][key][key2].new_intersection(union!);
+        }
+      );
     });
   }
 
@@ -144,20 +148,22 @@ export function filters_matrix<A extends string>(
 /*
  * returns facets and ids
  */
-export function matrix<A extends string>(
-  facets: FacetData<A>,
-  filters?: FiltersArray<A>
+export function matrix<I extends Item>(
+  facets: FacetData<I>,
+  filters?: FiltersArray<I>
 ) {
   const temp_facet = _clone(facets);
 
   filters = filters || [];
 
-  mapValues(temp_facet['bits_data'], (values, key: A) => {
-    mapValues(temp_facet['bits_data'][key], (facet_indexes, key2) => {
-      // @ts-expect-error sometimes TS doesn't make any sense
-      temp_facet['bits_data_temp'][key][key2] =
-        temp_facet['bits_data'][key][key2];
-    });
+  mapValues(temp_facet['bits_data'], (values, key: keyof I) => {
+    mapValues(
+      temp_facet['bits_data'][key],
+      (facet_indexes, key2: I[keyof I]) => {
+        temp_facet['bits_data_temp'][key][key2] =
+          temp_facet['bits_data'][key][key2];
+      }
+    );
   });
 
   temp_facet['is_temp_copied'] = true;
@@ -168,10 +174,10 @@ export function matrix<A extends string>(
   /**
    * process only conjunctive filters
    */
-  mapValues(filters, (filter: Filters<A>) => {
+  mapValues(filters, (filter: Filters<I>) => {
     if (!Array.isArray(filter[0])) {
       const filter_key = filter[0];
-      const filter_val = filter[1] as string | number;
+      const filter_val = filter[1] as I[keyof I];
 
       if (
         conjunctive_index &&
@@ -195,33 +201,34 @@ export function matrix<A extends string>(
 
   // cross all facets with conjunctive index
   if (conjunctive_index!) {
-    mapValues(temp_facet['bits_data_temp'], (values, key: A) => {
-      mapValues(temp_facet['bits_data_temp'][key], (facet_indexes, key2) => {
-        // @ts-expect-error sometimes TS doesn't make any sense
-        temp_facet['bits_data_temp'][key][key2] =
-          temp_facet['bits_data_temp'][key][key2].new_intersection(
-            conjunctive_index
-          );
-      });
+    mapValues(temp_facet['bits_data_temp'], (values, key: keyof I) => {
+      mapValues(
+        temp_facet['bits_data_temp'][key],
+        (facet_indexes, key2: I[keyof I]) => {
+          temp_facet['bits_data_temp'][key][key2] =
+            temp_facet['bits_data_temp'][key][key2].new_intersection(
+              conjunctive_index
+            );
+        }
+      );
     });
   }
 
   /**
    * process only negative filters
    */
-  mapValues(filters, (filter: Filter<A>) => {
+  mapValues(filters, (filter: Filter<I>) => {
     if (filter.length === 3 && filter[1] === '-') {
       const filter_key = filter[0];
-      const filter_val = filter[2];
+      const filter_val = filter[2] as I[keyof I];
 
       const negative_bits =
         temp_facet['bits_data_temp'][filter_key][filter_val].clone();
 
-      mapValues(temp_facet['bits_data_temp'], (values, key: A) => {
+      mapValues(temp_facet['bits_data_temp'], (values, key: keyof I) => {
         mapValues(
           temp_facet['bits_data_temp'][key],
-          (facet_indexes, key2: string | number) => {
-            // @ts-expect-error sometimes TS doesn't make any sense
+          (facet_indexes, key2: I[keyof I]) => {
             temp_facet['bits_data_temp'][key][key2] =
               temp_facet['bits_data_temp'][key][key2].new_difference(
                 negative_bits
@@ -233,7 +240,7 @@ export function matrix<A extends string>(
   });
 
   // cross all facets with disjunctive index
-  mapValues(temp_facet['bits_data_temp'], (values, key: A) => {
+  mapValues(temp_facet['bits_data_temp'], (values, key: keyof I) => {
     mapValues(
       temp_facet['bits_data_temp'][key],
       (facet_indexes, key2: string) => {
@@ -252,13 +259,10 @@ export function matrix<A extends string>(
   return temp_facet;
 }
 
-export function index<I extends Item, A extends keyof I & string>(
-  items: I[],
-  fields: A[]
-) {
+export function index<I extends Item>(items: I[], fields: (keyof I)[]) {
   fields = fields || [];
 
-  const facets: FacetData<A> = {
+  const facets: FacetData<I> = {
     data: {} as any,
     bits_data: {} as any,
     bits_data_temp: {} as any,
@@ -287,11 +291,11 @@ export function index<I extends Item, A extends keyof I & string>(
         }
 
         if (!facets['data'][field]) {
-          facets['data'][field] = {};
+          facets['data'][field] = {} as Record<I[keyof I], any[]>;
         }
 
         if (Array.isArray(item[field])) {
-          item[field].forEach((v: any) => {
+          item[field].forEach((v: I[keyof I]) => {
             if (!item[field]) {
               return;
             }
@@ -321,10 +325,10 @@ export function index<I extends Item, A extends keyof I & string>(
 
   facets['data'] = mapValues(
     facets['data'],
-    (values: Record<string | number, any[]>, field: A) => {
+    (values: Record<string | number, any[]>, field: keyof I) => {
       if (!facets['bits_data'][field]) {
-        facets['bits_data'][field] = {};
-        facets['bits_data_temp'][field] = {};
+        facets['bits_data'][field] = {} as Record<I[keyof I], FastBitSet>;
+        facets['bits_data_temp'][field] = {} as Record<I[keyof I], FastBitSet>;
       }
 
       //console.log(values);
@@ -388,17 +392,17 @@ export function facets_ids<A extends string>(
 export function getBuckets<
   I extends Item,
   S extends string,
-  A extends keyof I & string
+  C extends { [K in keyof I]?: AggregationConfig }
 >(
-  data: FacetData<A>,
-  input: SearchOptions<I, S, A>,
-  aggregations: PRecord<A, AggregationConfig>
-): Record<A, SearchAggregation<I, A>> {
+  data: FacetData<I>,
+  input: SearchOptions<I, S, C>,
+  aggregations: C
+): { [K in keyof C]: SearchAggregation<K> } {
   let position = 1;
 
   return mapValues(
     data['bits_data_temp'],
-    (v: Record<string | number, FastBitSet>, k: A) => {
+    (v: Record<string | number, FastBitSet>, k: keyof I) => {
       let order;
       let sort;
       let size;
@@ -510,7 +514,7 @@ export function getBuckets<
 
       return {
         name: k,
-        title: title || humanize(k),
+        title: title || humanize(k as string),
         position: position++,
         buckets: buckets,
         ...(show_facet_stats && { facet_stats: calculated_facet_stats }),
@@ -522,14 +526,14 @@ export function getBuckets<
 export function mergeAggregations<
   I extends Item,
   S extends string,
-  A extends keyof I & string
+  C extends { [K in keyof I]?: AggregationConfig }
 >(
-  aggregations: PRecord<A, AggregationConfig>,
-  input: SearchOptionsInternal<I, S, A>
-): PRecord<A, AggregationOptionsInternal<A>> {
+  aggregations: C,
+  input: SearchOptionsInternal<I, S, C>
+): { [K in keyof I]?: AggregationOptionsInternal<K> } {
   return mapValues(
     clone(aggregations),
-    (val: AggregationOptionsInternal<A>, key: A) => {
+    (val: AggregationOptionsInternal<keyof I>, key: keyof I) => {
       if (!val.field) {
         val.field = key;
       }
@@ -560,19 +564,19 @@ export function mergeAggregations<
 export function input_to_facet_filters<
   I extends Item,
   S extends string,
-  A extends keyof I & string
->(input: SearchOptions<I, S, A>, config: PRecord<A, AggregationConfig>) {
-  const filters: FiltersArray<A> = [];
+  C extends { [K in keyof I]?: AggregationConfig }
+>(input: SearchOptions<I, S, C>, config: C) {
+  const filters: FiltersArray<I> = [];
 
-  mapValues(input.filters, (values: Array<string | number>, key: A) => {
+  mapValues(input.filters, (values: Array<string | number>, key: keyof I) => {
     if (values && values.length) {
       if (config[key]!.conjunction !== false) {
-        mapValues(values, (values2: string | number) => {
+        mapValues(values, (values2: I[keyof I]) => {
           filters.push([key, values2]);
         });
       } else {
-        const temp: Array<Filter<A>> = [];
-        mapValues(values, (values2: string | number) => {
+        const temp: Array<Filter<I>> = [];
+        mapValues(values, (values2: I[keyof I]) => {
           temp.push([key, values2]);
         });
 
@@ -581,20 +585,23 @@ export function input_to_facet_filters<
     }
   });
 
-  mapValues(input.not_filters, (values: Array<string | number>, key: A) => {
-    if (values && values.length) {
-      mapValues(values, (values2: string | number) => {
-        filters.push([key, '-', values2]);
-      });
+  mapValues(
+    input.not_filters,
+    (values: Array<string | number>, key: keyof I) => {
+      if (values && values.length) {
+        mapValues(values, (values2: I[keyof I]) => {
+          filters.push([key, '-', values2]);
+        });
+      }
     }
-  });
+  );
 
   return filters;
 }
 
-export function parse_boolean_query<A extends string>(
+export function parse_boolean_query<I extends Item>(
   query: string
-): FiltersArray<A> {
+): FiltersArray<I> {
   const result = booleanParser.parseBooleanQuery(query);
 
   return map(result, (v1) => {
