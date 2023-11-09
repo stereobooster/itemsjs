@@ -8,7 +8,15 @@
   <body>
     <script src="./dist/index.umd.js"></script>
     <script>
-      var configuration = { searchableFields: ['name'] };
+      var configuration = {
+        searchableFields: ['name'],
+        aggregations: {
+          name: {
+            title: 'Name',
+            size: 10,
+          },
+        },
+      };
       var rows = [{ name: 'name' }];
       console.log(itemsjs(rows, configuration).search());
     </script>
